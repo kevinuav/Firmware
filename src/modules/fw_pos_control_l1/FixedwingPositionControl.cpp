@@ -683,9 +683,10 @@ FixedwingPositionControl::control_position(const Vector2f &curr_pos, const Vecto
 			_att_sp.pitch_body = 0.0f;
 
 		} else if (pos_sp_curr.type == position_setpoint_s::SETPOINT_TYPE_POSITION) {
-			/* waypoint is a plain navigation waypoint */
+			/* waypoint is a plain navigation waypoint
+			navigate_waypoints()这个函数算好了期望的横滚角，放在私有变量里 */
 			_l1_control.navigate_waypoints(prev_wp, curr_wp, curr_pos, nav_speed_2d);
-			_att_sp.roll_body = _l1_control.get_roll_setpoint();
+			_att_sp.roll_body = _l1_control.get_roll_setpoint();//这个get是将算好的私有变量-期望横滚角读出来。
 			_att_sp.yaw_body = _l1_control.nav_bearing();
 
 			tecs_update_pitch_throttle(pos_sp_curr.alt,
@@ -710,6 +711,7 @@ FixedwingPositionControl::control_position(const Vector2f &curr_pos, const Vecto
 
 			}
 
+			/*这个也是按LOITER模式算好期望横滚角与偏航角*/
 			_l1_control.navigate_loiter(curr_wp, curr_pos, loiter_radius, loiter_direction, nav_speed_2d);
 
 			_att_sp.roll_body = _l1_control.get_roll_setpoint();
