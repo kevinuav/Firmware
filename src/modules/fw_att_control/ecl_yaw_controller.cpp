@@ -65,7 +65,8 @@ float ECL_YawController::control_attitude(const struct ECL_ControlData &ctl_data
 }
 
 float ECL_YawController::control_attitude_impl_openloop(const struct ECL_ControlData &ctl_data)
-{
+{/*代码实际上没有对协调转弯的侧滑角作闭环处理，只对其做了开环处理，
+也就是根据输入的期望横滚与俯仰角按照协调转弯的公式直接给出期望的侧滑角速度*/
 	/* Do not calculate control signal with bad inputs */
 	if (!(PX4_ISFINITE(ctl_data.roll) &&
 	      PX4_ISFINITE(ctl_data.pitch) &&
@@ -102,7 +103,8 @@ float ECL_YawController::control_attitude_impl_openloop(const struct ECL_Control
 
 
 	if (!inverted) {
-		/* Calculate desired yaw rate from coordinated turn constraint / (no side forces) */
+		/* Calculate desired yaw rate from coordinated turn constraint / (no side forces)
+		协调转弯公式*/
 		_rate_setpoint = tanf(constrained_roll) * cosf(ctl_data.pitch) * CONSTANTS_ONE_G / (ctl_data.airspeed <
 				 ctl_data.airspeed_min ? ctl_data.airspeed_min : ctl_data.airspeed);
 	}
@@ -116,7 +118,7 @@ float ECL_YawController::control_attitude_impl_openloop(const struct ECL_Control
 }
 
 float ECL_YawController::control_bodyrate(const struct ECL_ControlData &ctl_data)
-{
+{	/*对机体座标下用FF+PI进行角加速度期望值计算*/
 	/* Do not calculate control signal with bad inputs */
 	if (!(PX4_ISFINITE(ctl_data.roll) && PX4_ISFINITE(ctl_data.pitch) && PX4_ISFINITE(ctl_data.body_y_rate) &&
 	      PX4_ISFINITE(ctl_data.body_z_rate) && PX4_ISFINITE(ctl_data.pitch_rate_setpoint) &&
@@ -153,6 +155,7 @@ float ECL_YawController::control_bodyrate(const struct ECL_ControlData &ctl_data
 	if (_coordinated_method == COORD_METHOD_CLOSEACC) {
 		// XXX lateral acceleration needs to go into integrator with a gain
 		//_bodyrate_setpoint -= (ctl_data.acc_body_y / (airspeed * cosf(ctl_data.pitch)));
+		//代码实际上没有对侧滑角速度做闭环处理
 	}
 
 	/* Calculate body angular rate error */
@@ -178,7 +181,7 @@ float ECL_YawController::control_bodyrate(const struct ECL_ControlData &ctl_data
 		_integrator = math::constrain(_integrator + id * _k_i, -_integrator_max, _integrator_max);
 	}
 
-	/* Apply PI rate controller and store non-limited output */
+	/* Apply PI rate controller and store non-limited output 对角速度做FF+PI控制*/
 	_last_output = (_bodyrate_setpoint * _k_ff + _rate_error * _k_p + _integrator) * ctl_data.scaler *
 		       ctl_data.scaler;  //scaler is proportional to 1/airspeed
 
@@ -196,7 +199,9 @@ float ECL_YawController::control_attitude_impl_accclosedloop(const struct ECL_Co
 
 float ECL_YawController::control_euler_rate(const struct ECL_ControlData &ctl_data)
 {
-	/* Transform setpoint to body angular rates (jacobian) */
+	/* Transform setpoint to body angular rates (jacobian)
+	这个就是输入大地座标下的期望姿态角速度，通过雅可比矩阵将其娈成机体座标下的期望角速度，
+	再传给control_bodyrate（）这个函数做FF+PI控制 */
 	_bodyrate_setpoint = -sinf(ctl_data.roll) * ctl_data.pitch_rate_setpoint +
 			     cosf(ctl_data.roll) * cosf(ctl_data.pitch) * _rate_setpoint;
 

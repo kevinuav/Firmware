@@ -57,10 +57,11 @@ float ECL_PitchController::control_attitude(const struct ECL_ControlData &ctl_da
 		return _rate_setpoint;
 	}
 
-	/* Calculate the error */
+	/* Calculate the error 这里是将姿态角差值乘以比例P得到NED座标下角速度的期望值*/
 	float pitch_error = ctl_data.pitch_setpoint - ctl_data.pitch;
 
-	/*  Apply P controller: rate setpoint from current error and time constant */
+	/*  Apply P controller: rate setpoint from current error and time constant
+	这里的_tc就是所谓的时间常数，其倒数就是这个角度差的P*/
 	_rate_setpoint =  pitch_error / _tc;
 
 	return _rate_setpoint;

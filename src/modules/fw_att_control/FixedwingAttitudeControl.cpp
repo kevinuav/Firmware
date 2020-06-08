@@ -418,7 +418,7 @@ void FixedwingAttitudeControl::Run()
 				_wheel_ctrl.reset_integrator();
 			}
 
-			/* Prepare data for attitude controllers */
+			/* Prepare data for attitude controllers 关于控制的输入变量都在这个control_input的结构体之中了*/
 			struct ECL_ControlData control_input = {};
 			control_input.roll = euler_angles.phi();
 			control_input.pitch = euler_angles.theta();
@@ -494,7 +494,7 @@ void FixedwingAttitudeControl::Run()
 			trim_roll += _flaps_applied * _param_fw_dtrim_r_flps.get();
 			trim_pitch += _flaps_applied * _param_fw_dtrim_p_flps.get();
 
-			/* Run attitude controllers */
+			/* Run attitude controllers 如果控制姿态 */
 			if (_vcontrol_mode.flag_control_attitude_enabled) {
 				if (PX4_ISFINITE(_att_sp.roll_body) && PX4_ISFINITE(_att_sp.pitch_body)) {
 					_roll_ctrl.control_attitude(control_input);
@@ -510,13 +510,14 @@ void FixedwingAttitudeControl::Run()
 						_wheel_ctrl.reset_integrator();
 					}
 
-					/* Update input data for rate controllers */
+					/* Update input data for rate controllers
+					这个get_desired_rate（）只不过是一个接口将计算好的角速度期望值读出来而矣，在之前早就算好了。 */
 					control_input.roll_rate_setpoint = _roll_ctrl.get_desired_rate();
 					control_input.pitch_rate_setpoint = _pitch_ctrl.get_desired_rate();
 					control_input.yaw_rate_setpoint = _yaw_ctrl.get_desired_rate();
 
 					/* Run attitude RATE controllers which need the desired attitudes from above, add trim */
-					float roll_u = _roll_ctrl.control_euler_rate(control_input);
+					float roll_u = _roll_ctrl.control_euler_rate(control_input);//这里输出的就是ROLL的控制量
 					_actuators.control[actuator_controls_s::INDEX_ROLL] = (PX4_ISFINITE(roll_u)) ? roll_u + trim_roll : trim_roll;
 
 					if (!PX4_ISFINITE(roll_u)) {
@@ -576,6 +577,7 @@ void FixedwingAttitudeControl::Run()
 				/*
 				 * Lazily publish the rate setpoint (for analysis, the actuators are published below)
 				 * only once available
+				 * get_desired_bodyrate（）只是接口，实际值一早就算好放在私有变量里了
 				 */
 				_rates_sp.roll = _roll_ctrl.get_desired_bodyrate();
 				_rates_sp.pitch = _pitch_ctrl.get_desired_bodyrate();
@@ -585,7 +587,7 @@ void FixedwingAttitudeControl::Run()
 
 				_rate_sp_pub.publish(_rates_sp);
 
-			} else {
+			} else { //如果不控制姿态而是直接给出期望角速度的话
 				vehicle_rates_setpoint_poll();
 
 				_roll_ctrl.set_bodyrate_setpoint(_rates_sp.roll);
