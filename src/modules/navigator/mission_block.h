@@ -105,6 +105,8 @@ protected:
 	 *
 	 * @param the mission item to convert
 	 * @param the position setpoint that needs to be set
+	 *
+	 * 这里转换mission_items为位置setpoint，估计就是这里设置不同航点的目标位置给位置控制器执行的
 	 */
 	bool mission_item_to_position_setpoint(const mission_item_s &item, position_setpoint_s *sp);
 

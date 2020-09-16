@@ -413,7 +413,7 @@ Navigator::run()
 			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_CHANGE_SPEED) {
 				if (cmd.param2 > FLT_EPSILON) {
 					// XXX not differentiating ground and airspeed yet
-					set_cruising_speed(cmd.param2);
+					set_cruising_speed(cmd.param2); //在这里通过mission_items的伴随参数设置巡航速度
 
 				} else {
 					set_cruising_speed();
@@ -856,7 +856,7 @@ Navigator::get_cruising_speed()
 }
 
 void
-Navigator::set_cruising_speed(float speed)
+Navigator::set_cruising_speed(float speed) //这是设置任务巡航速度的接口函数
 {
 	if (_vstatus.vehicle_type == vehicle_status_s::VEHICLE_TYPE_ROTARY_WING) {
 		_mission_cruising_speed_mc = speed;

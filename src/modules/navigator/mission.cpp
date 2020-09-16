@@ -176,7 +176,7 @@ Mission::on_activation()
 }
 
 void
-Mission::on_active()
+Mission::on_active()  //这里是任务运行的代码,只要任务有更新，就在这里面调用set_mission_items（）来更新目标航点的位置setpoint
 {
 	check_mission_valid(false);
 
@@ -209,17 +209,17 @@ Mission::on_active()
 	}
 
 	/* lets check if we reached the current mission item */
-	if (_mission_type != MISSION_TYPE_NONE && is_mission_item_reached()) {
+	if (_mission_type != MISSION_TYPE_NONE && is_mission_item_reached()) { //判断任务航点有没有到达或完成
 		/* If we just completed a takeoff which was inserted before the right waypoint,
 		   there is no need to report that we reached it because we didn't. */
-		if (_work_item_type != WORK_ITEM_TYPE_TAKEOFF) {
+		if (_work_item_type != WORK_ITEM_TYPE_TAKEOFF) {   //起飞单独处理
 			set_mission_item_reached();
 		}
 
 		if (_mission_item.autocontinue) {
-			/* switch to next waypoint if 'autocontinue' flag set */
+			/* switch to next waypoint if 'autocontinue' flag set 完成了就自动推进到下一航点*/
 			advance_mission();
-			set_mission_items();
+			set_mission_items(); //并设置下一航点伴随要做的东西，如更新航点的目标位置等等
 		}
 
 	} else if (_mission_type != MISSION_TYPE_NONE && _param_mis_altmode.get() == MISSION_ALTMODE_FOH) {
@@ -233,12 +233,12 @@ Mission::on_active()
 		}
 	}
 
-	/* check if a cruise speed change has been commanded */
+	/* check if a cruise speed change has been commanded 如果需要更新速度在这里更新*/
 	if (_mission_type != MISSION_TYPE_NONE) {
 		cruising_speed_sp_update();
 	}
 
-	/* see if we need to update the current yaw heading */
+	/* see if we need to update the current yaw heading 如果需要，更新航向*/
 	if (!_param_mis_mnt_yaw_ctl.get()
 	    && (_navigator->get_vstatus()->vehicle_type == vehicle_status_s::VEHICLE_TYPE_ROTARY_WING)
 	    && (_navigator->get_vroi().mode != vehicle_roi_s::ROI_NONE)
@@ -582,9 +582,11 @@ Mission::advance_mission()
 }
 
 void
-Mission::set_mission_items()
+Mission::set_mission_items()  //所有的任务航点和要做的相应动作的设置全在这个函数里，基本全部在后面的handle部分。
 {
-	/* reset the altitude foh (first order hold) logic, if altitude foh is enabled (param) a new foh element starts now */
+	/* reset the altitude foh (first order hold) logic, if altitude foh is enabled (param) a new foh element starts now
+	首先准备mission_items再处理
+	*/
 	_min_current_sp_distance_xy = FLT_MAX;
 
 	/* the home dist check provides user feedback, so we initialize it to this */
@@ -598,7 +600,7 @@ Mission::set_mission_items()
 
 	work_item_type new_work_item_type = WORK_ITEM_TYPE_DEFAULT;
 
-	if (prepare_mission_items(&_mission_item, &mission_item_next_position, &has_next_position_item,
+	if (prepare_mission_items(&_mission_item, &mission_item_next_position, &has_next_position_item,   //尝试读取下一个航点的mission_items
 				  &mission_item_after_next_position, &has_after_next_position_item)) {
 		/* if mission type changed, notify */
 		if (_mission_type != MISSION_TYPE_MISSION) {
@@ -611,7 +613,7 @@ Mission::set_mission_items()
 		_mission_type = MISSION_TYPE_MISSION;
 
 	} else {
-		/* no mission available or mission finished, switch to loiter */
+		/* no mission available or mission finished, switch to loiter 如果读取不成功，说明任务完成或无任务，执行loiter*/
 		if (_mission_type != MISSION_TYPE_NONE) {
 
 			if (_navigator->get_land_detected()->landed) {
@@ -674,11 +676,11 @@ Mission::set_mission_items()
 
 	/*********************************** handle mission item *********************************************/
 
-	/* handle mission items depending on the mode */
+	/* handle mission items depending on the mode 准备完过后就开始处理了*/
 
 	const position_setpoint_s current_setpoint_copy = _navigator->get_position_setpoint_triplet()->current;
 
-	if (item_contains_position(_mission_item)) {
+	if (item_contains_position(_mission_item)) {  //这里分带位置的mission_items和不带位置的mission_items
 		switch (_mission_execution_mode) {
 		case mission_result_s::MISSION_EXECUTION_MODE_NORMAL:
 		case mission_result_s::MISSION_EXECUTION_MODE_FAST_FORWARD: {
@@ -1055,7 +1057,7 @@ Mission::set_mission_items()
 	}
 
 	/*********************************** set setpoints and check next *********************************************/
-
+	/*这里开始设置航点的位置setpoint*/
 	position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
 
 	// The logic in this section establishes the tracking between the current waypoint
@@ -1280,7 +1282,7 @@ Mission::calculate_takeoff_altitude(struct mission_item_s *mission_item)
 }
 
 void
-Mission::heading_sp_update()
+Mission::heading_sp_update() //更新航向，主要用于多轴指向兴趣点，对固定翼好像没什么用
 {
 	struct position_setpoint_triplet_s *pos_sp_triplet =
 		_navigator->get_position_setpoint_triplet();
