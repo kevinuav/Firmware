@@ -184,7 +184,7 @@ Navigator::run()
 
 		orb_copy(ORB_ID(vehicle_status), _vehicle_status_sub, &_vstatus);
 
-		/* gps updated */
+		/* gps updated GPS更新*/
 		if (_gps_pos_sub.updated()) {
 			_gps_pos_sub.copy(&_gps_pos);
 
@@ -193,7 +193,7 @@ Navigator::run()
 			}
 		}
 
-		/* global position updated */
+		/* global position updated 解算后的位置更新*/
 		if (_global_pos_sub.updated()) {
 			_global_pos_sub.copy(&_global_pos);
 
@@ -202,7 +202,7 @@ Navigator::run()
 			}
 		}
 
-		// check for parameter updates
+		// check for parameter updates 参数更新
 		if (_parameter_update_sub.updated()) {
 			// clear update
 			parameter_update_s pupdate;
@@ -216,7 +216,7 @@ Navigator::run()
 		_position_controller_status_sub.update();
 		_home_pos_sub.update(&_home_pos);
 
-		if (_vehicle_command_sub.updated()) {
+		if (_vehicle_command_sub.updated()) {  //命令更新
 			const unsigned last_generation = _vehicle_command_sub.get_last_generation();
 			vehicle_command_s cmd{};
 			_vehicle_command_sub.copy(&cmd);
@@ -225,13 +225,13 @@ Navigator::run()
 				PX4_ERR("vehicle_command lost, generation %d -> %d", last_generation, _vehicle_command_sub.get_last_generation());
 			}
 
-			if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_GO_AROUND) {
+			if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_GO_AROUND) { //飞机转圈，当然，这里只是留白了
 
 				// DO_GO_AROUND is currently handled by the position controller (unacknowledged)
 				// TODO: move DO_GO_AROUND handling to navigator
 				publish_vehicle_command_ack(cmd, vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED);
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_REPOSITION) {
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_REPOSITION) { //位置变化
 
 				bool reposition_valid = true;
 
@@ -262,6 +262,7 @@ Navigator::run()
 					position_setpoint_triplet_s *curr = get_position_setpoint_triplet();
 
 					// store current position as previous position and goal as next
+					//将现时的位置存为上一个，将下一个位置存在现时
 					rep->previous.yaw = get_local_position()->heading;
 					rep->previous.lat = get_global_position()->lat;
 					rep->previous.lon = get_global_position()->lon;
@@ -272,6 +273,7 @@ Navigator::run()
 					rep->current.type = position_setpoint_s::SETPOINT_TYPE_LOITER;
 
 					// If no argument for ground speed, use default value.
+					//看看传入参数中有没有空速，没有就用默认值
 					if (cmd.param1 <= 0 || !PX4_ISFINITE(cmd.param1)) {
 						rep->current.cruising_speed = get_cruising_speed();
 
@@ -295,6 +297,7 @@ Navigator::run()
 					if (PX4_ISFINITE(cmd.param5) && PX4_ISFINITE(cmd.param6)) {
 
 						// Position change with optional altitude change
+						//改变了的经纬
 						rep->current.lat = cmd.param5;
 						rep->current.lon = cmd.param6;
 
@@ -308,6 +311,7 @@ Navigator::run()
 					} else if (PX4_ISFINITE(cmd.param7)) {
 
 						// Altitude without position change
+						//不改变经纬的情况下高度改变
 						// This condition is necessary for altitude changes just after takeoff where lat and lon are still nan
 						if (curr->current.valid && PX4_ISFINITE(curr->current.lat) && PX4_ISFINITE(curr->current.lon)) {
 							rep->current.lat = curr->current.lat;
@@ -322,6 +326,7 @@ Navigator::run()
 
 					} else {
 						// All three set to NaN - hold in current position
+						//经、纬、高都是无效值的话就保持在现在的位置
 						rep->current.lat = get_global_position()->lat;
 						rep->current.lon = get_global_position()->lon;
 						rep->current.alt = get_global_position()->alt;
@@ -341,7 +346,7 @@ Navigator::run()
 
 				// CMD_DO_REPOSITION is acknowledged by commander
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_NAV_TAKEOFF) {
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_NAV_TAKEOFF) { //起飞
 				position_setpoint_triplet_s *rep = get_takeoff_triplet();
 
 				// store current position as previous position and goal as next
@@ -384,7 +389,7 @@ Navigator::run()
 
 				// CMD_NAV_TAKEOFF is acknowledged by commander
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_LAND_START) {
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_LAND_START) { //着陆
 
 				/* find NAV_CMD_DO_LAND_START in the mission and
 				 * use MAV_CMD_MISSION_START to start the mission there
@@ -401,7 +406,7 @@ Navigator::run()
 
 				publish_vehicle_command_ack(cmd, vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED);
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_MISSION_START) {
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_MISSION_START) { //开始任务
 				if (_mission_result.valid && PX4_ISFINITE(cmd.param1) && (cmd.param1 >= 0)) {
 					if (!_mission.set_current_mission_index(cmd.param1)) {
 						PX4_WARN("CMD_MISSION_START failed");
@@ -410,7 +415,7 @@ Navigator::run()
 
 				// CMD_MISSION_START is acknowledged by commander
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_CHANGE_SPEED) {
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_CHANGE_SPEED) { //改变飞行速度
 				if (cmd.param2 > FLT_EPSILON) {
 					// XXX not differentiating ground and airspeed yet
 					set_cruising_speed(cmd.param2); //在这里通过mission_items的伴随参数设置巡航速度
@@ -430,7 +435,7 @@ Navigator::run()
 				// TODO: handle responses for supported DO_CHANGE_SPEED options?
 				publish_vehicle_command_ack(cmd, vehicle_command_s::VEHICLE_CMD_RESULT_ACCEPTED);
 
-			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_SET_ROI
+			} else if (cmd.command == vehicle_command_s::VEHICLE_CMD_DO_SET_ROI //这些都是一些命令
 				   || cmd.command == vehicle_command_s::VEHICLE_CMD_NAV_ROI
 				   || cmd.command == vehicle_command_s::VEHICLE_CMD_DO_SET_ROI_LOCATION
 				   || cmd.command == vehicle_command_s::VEHICLE_CMD_DO_SET_ROI_WPNEXT_OFFSET
@@ -474,10 +479,10 @@ Navigator::run()
 			}
 		}
 
-		/* Check for traffic */
+		/* Check for traffic 交通状况更新*/
 		check_traffic();
 
-		/* Check geofence violation */
+		/* Check geofence violation 地理围栏检查*/
 		if (have_geofence_position_data &&
 		    (_geofence.getGeofenceAction() != geofence_result_s::GF_ACTION_NONE) &&
 		    (hrt_elapsed_time(&last_geofence_check) > GEOFENCE_CHECK_INTERVAL)) {
@@ -528,7 +533,7 @@ Navigator::run()
 			_geofence_result_pub.publish(_geofence_result);
 		}
 
-		/* Do stuff according to navigation state set by commander */
+		/* Do stuff according to navigation state set by commander 跟据commander处理一些相关的事情*/
 		NavigatorMode *navigation_mode_new{nullptr};
 
 		switch (_vstatus.nav_state) {
