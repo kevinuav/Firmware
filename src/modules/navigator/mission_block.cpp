@@ -72,7 +72,7 @@ MissionBlock::MissionBlock(Navigator *navigator) :
 bool
 MissionBlock::is_mission_item_reached()
 {
-	/* handle non-navigation or indefinite waypoints */
+	/* handle non-navigation or indefinite waypoints 这些没有航点位置要求的就直接返回true*/
 
 	switch (_mission_item.nav_cmd) {
 	case NAV_CMD_DO_SET_SERVO:
@@ -148,7 +148,7 @@ MissionBlock::is_mission_item_reached()
 				_navigator->get_global_position()->lat,
 				_navigator->get_global_position()->lon,
 				_navigator->get_global_position()->alt,
-				&dist_xy, &dist_z);
+				&dist_xy, &dist_z); //这里传入去的dist_xy是平面距离，返回的dist是空间距离
 
 		/* FW special case for NAV_CMD_WAYPOINT to achieve altitude via loiter */
 		if (_navigator->get_vstatus()->vehicle_type == vehicle_status_s::VEHICLE_TYPE_FIXED_WING &&
@@ -156,7 +156,19 @@ MissionBlock::is_mission_item_reached()
 
 			struct position_setpoint_s *curr_sp = &_navigator->get_position_setpoint_triplet()->current;
 
-			/* close to waypoint, but altitude error greater than twice acceptance */
+			if(_local_pos_sub.updated()){     //读取飞机对地速度
+				_local_pos_sub.copy(&_local_position);
+			}
+
+			float v_xy=hor_vel(_local_position.vx,_local_position.vy);
+			float v_z=(float)_local_position.vz;
+			warnx("%f,%f,%f",(double)v_xy,(double)v_z,(double)dist_xy);
+			if(time2drop(dist_xy,dist_z,v_xy,v_z))
+			{
+				warnx("dropbomb!!!");
+			}
+
+			/* close to waypoint, but altitude error greater than twice acceptance 如果高度差太远*/
 			if ((dist >= 0.0f)
 			    && (dist_z > 2 * _navigator->get_altitude_acceptance_radius())
 			    && (dist_xy < 2 * _navigator->get_loiter_radius())) {
@@ -170,7 +182,7 @@ MissionBlock::is_mission_item_reached()
 				}
 
 			} else {
-				/* restore SETPOINT_TYPE_POSITION */
+				/* restore SETPOINT_TYPE_POSITION 如果高度不差太远*/
 				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_LOITER) {
 					/* loiter acceptance criteria required to revert back to SETPOINT_TYPE_POSITION */
 					if ((dist >= 0.0f)
@@ -801,4 +813,22 @@ MissionBlock::get_absolute_altitude_for_item(const mission_item_s &mission_item)
 	} else {
 		return mission_item.altitude;
 	}
+}
+
+float
+MissionBlock::hor_vel(float x,float y)
+{
+	return sqrt(x*x+y*y);
+}
+
+
+bool
+MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
+{
+	float tar2=(tarxy/vxy)*(tarxy/vxy);
+
+	float vet2=2*(tarz+vz)/(float)9.8;
+	if(tar2<=vet2)return true;
+	else return false;
+
 }

@@ -257,10 +257,10 @@ Navigator::run()
 					}
 				}
 
-				if (reposition_valid) {
+				if (reposition_valid) { //引导模式
 					position_setpoint_triplet_s *rep = get_reposition_triplet();
 					position_setpoint_triplet_s *curr = get_position_setpoint_triplet();
-
+					warnx("reposition");
 					// store current position as previous position and goal as next
 					//将现时的位置存为上一个，将下一个位置存在现时
 					rep->previous.yaw = get_local_position()->heading;

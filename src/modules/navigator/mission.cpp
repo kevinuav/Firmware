@@ -179,7 +179,6 @@ void
 Mission::on_active()  //这里是任务运行的代码,只要任务有更新，就在这里面调用set_mission_items（）来更新目标航点的位置setpoint
 {
 	check_mission_valid(false);
-
 	/* check if anything has changed */
 	bool mission_sub_updated = _mission_sub.updated();
 

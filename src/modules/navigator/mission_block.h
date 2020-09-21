@@ -52,6 +52,9 @@
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vehicle_global_position.h>
 #include <uORB/topics/vtol_vehicle_status.h>
+#include <uORB/topics/vehicle_local_position.h>
+#include <uORB/uORB.h>
+#include <uORB/Subscription.hpp>
 
 class Navigator;
 
@@ -157,4 +160,11 @@ protected:
 	hrt_abstime _time_wp_reached{0};
 
 	uORB::Publication<actuator_controls_s>	_actuator_pub{ORB_ID(actuator_controls_2)};
+	uORB::Subscription  _local_pos_sub{ORB_ID(vehicle_local_position)};
+
+	vehicle_local_position_s           _local_position{};
+
+	float hor_vel(float x,float y);
+
+	bool time2drop(float tarxy,float tarz,float vxy,float vz);
 };
