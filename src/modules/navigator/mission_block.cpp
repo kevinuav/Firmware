@@ -162,8 +162,9 @@ MissionBlock::is_mission_item_reached()
 
 			float v_xy=hor_vel(_local_position.vx,_local_position.vy);
 			float v_z=(float)_local_position.vz;
-			warnx("%f,%f,%f",(double)v_xy,(double)v_z,(double)dist_xy);
-			if(time2drop(dist_xy,dist_z,v_xy,v_z))
+			float z=-(float)_local_position.z;
+		//	warnx("%f,%f,%f",(double)v_xy,(double)v_z,(double)dist_xy);
+			if(time2drop(dist_xy,z,v_xy,v_z))
 			{
 				warnx("dropbomb!!!");
 			}
@@ -825,10 +826,11 @@ MissionBlock::hor_vel(float x,float y)
 bool
 MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
 {
-	float tar2=(tarxy/vxy)*(tarxy/vxy);
+	float t=tarxy/vxy;
 
-	float vet2=2*(tarz+vz)/(float)9.8;
-	if(tar2<=vet2)return true;
+	float h=vz*t+(float)9.8*t*t/(float)2;
+	warnx("tarz=%f h=%f t=%f",(double)tarz,(double)h,(double)t);
+	if(tarz>=h)return true;
 	else return false;
 
 }
