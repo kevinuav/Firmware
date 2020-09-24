@@ -97,6 +97,7 @@ enum NAV_CMD {
 	NAV_CMD_FENCE_CIRCLE_INCLUSION = 5003,
 	NAV_CMD_FENCE_CIRCLE_EXCLUSION = 5004,
 	NAV_CMD_CONDITION_GATE = 4501,
+	NAV_CMD_DROPBOMB = 6464,
 	NAV_CMD_INVALID = UINT16_MAX /* ensure that casting a large number results in a specific error */
 };
 

@@ -749,7 +749,6 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 					/* ignore yaw here, otherwise it might yaw before heading_sp_update takes over */
 					_mission_item.yaw = NAN;
 				}
-
 				/* if we just did a normal takeoff navigate to the actual waypoint now */
 				if (_mission_item.nav_cmd == NAV_CMD_TAKEOFF &&
 				    _work_item_type == WORK_ITEM_TYPE_TAKEOFF &&
@@ -762,6 +761,7 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 					 * since in NAV_CMD_TAKEOFF mode there is currently no time_inside.
 					 */
 					_mission_item.time_inside = 0.0f;
+
 				}
 
 				/* if we just did a VTOL takeoff, prepare transition */
@@ -953,6 +953,17 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 					_mission_item.time_inside = 0.0f;
 				}
 
+				if(_mission_item.nav_cmd == NAV_CMD_WAYPOINT&& pos_sp_triplet->previous.valid )//加入dropbomb代码
+				{
+
+					warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
+					create_waypoint_from_line_and_dist(pos_sp_triplet->current.lat, pos_sp_triplet->current.lon,
+					 pos_sp_triplet->previous.lat, pos_sp_triplet->previous.lon, -10.0,&_mission_item.lat, &_mission_item.lon);
+
+
+					warnx("prelat=%f prelon=%f newlat=%f newlon=%f",pos_sp_triplet->previous.lat, pos_sp_triplet->previous.lon,_mission_item.lat, _mission_item.lon);
+				}
+
 				break;
 			}
 
@@ -972,7 +983,7 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 		}
 
 	} else {
-		/* handle non-position mission items such as commands */
+		/* handle non-position mission items such as commands 不带位置的mission_items*/
 		switch (_mission_execution_mode) {
 		case mission_result_s::MISSION_EXECUTION_MODE_NORMAL:
 		case mission_result_s::MISSION_EXECUTION_MODE_FAST_FORWARD: {

@@ -150,7 +150,7 @@ MissionBlock::is_mission_item_reached()
 				_navigator->get_global_position()->alt,
 				&dist_xy, &dist_z); //这里传入去的dist_xy是平面距离，返回的dist是空间距离
 
-		/* FW special case for NAV_CMD_WAYPOINT to achieve altitude via loiter */
+		/* FW special case for NAV_CMD_WAYPOINT to achieve altitude via loiter 如果是固定翼就对是否到达航点做特殊处理，而一般情况是用通用方法判断有没到达航点*/
 		if (_navigator->get_vstatus()->vehicle_type == vehicle_status_s::VEHICLE_TYPE_FIXED_WING &&
 		    (_mission_item.nav_cmd == NAV_CMD_WAYPOINT)) {
 
@@ -174,17 +174,17 @@ MissionBlock::is_mission_item_reached()
 			    && (dist_z > 2 * _navigator->get_altitude_acceptance_radius())
 			    && (dist_xy < 2 * _navigator->get_loiter_radius())) {
 
-				/* SETPOINT_TYPE_POSITION -> SETPOINT_TYPE_LOITER */
+				/* SETPOINT_TYPE_POSITION -> SETPOINT_TYPE_LOITER 如果是普通航点模式*/
 				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_POSITION) {
 					curr_sp->type = position_setpoint_s::SETPOINT_TYPE_LOITER;
 					curr_sp->loiter_radius = _navigator->get_loiter_radius();
 					curr_sp->loiter_direction = 1;
-					_navigator->set_position_setpoint_triplet_updated();
+					_navigator->set_position_setpoint_triplet_updated(); //setpoint更新后要用这个函数设置一下
 				}
 
 			} else {
 				/* restore SETPOINT_TYPE_POSITION 如果高度不差太远*/
-				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_LOITER) {
+				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_LOITER) { //本身又是盘旋模式
 					/* loiter acceptance criteria required to revert back to SETPOINT_TYPE_POSITION */
 					if ((dist >= 0.0f)
 					    && (dist_z < _navigator->get_loiter_radius())
@@ -377,7 +377,7 @@ MissionBlock::is_mission_item_reached()
 		}
 	}
 
-	/* Check if the waypoint and the requested yaw setpoint. */
+	/* Check if the waypoint and the requested yaw setpoint. 这里判断偏航角到达没*/
 
 	if (_waypoint_position_reached && !_waypoint_yaw_reached) {
 
@@ -554,6 +554,7 @@ MissionBlock::item_contains_position(const mission_item_s &item)
 	       item.nav_cmd == NAV_CMD_LOITER_TO_ALT ||
 	       item.nav_cmd == NAV_CMD_VTOL_TAKEOFF ||
 	       item.nav_cmd == NAV_CMD_VTOL_LAND ||
+	       item.nav_cmd == NAV_CMD_DROPBOMB ||
 	       item.nav_cmd == NAV_CMD_DO_FOLLOW_REPOSITION;
 }
 
@@ -829,7 +830,7 @@ MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
 	float t=tarxy/vxy;
 
 	float h=vz*t+(float)9.8*t*t/(float)2;
-	warnx("tarz=%f h=%f t=%f",(double)tarz,(double)h,(double)t);
+	//warnx("tarz=%f h=%f t=%f",(double)tarz,(double)h,(double)t);
 	if(tarz>=h)return true;
 	else return false;
 
