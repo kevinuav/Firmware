@@ -150,6 +150,8 @@ MissionBlock::is_mission_item_reached()
 				_navigator->get_global_position()->alt,
 				&dist_xy, &dist_z); //这里传入去的dist_xy是平面距离，返回的dist是空间距离
 
+		warnx("mission: lat=%f lon=%f",_mission_item.lat,_mission_item.lon);
+
 		/* FW special case for NAV_CMD_WAYPOINT to achieve altitude via loiter 如果是固定翼就对是否到达航点做特殊处理，而一般情况是用通用方法判断有没到达航点*/
 		if (_navigator->get_vstatus()->vehicle_type == vehicle_status_s::VEHICLE_TYPE_FIXED_WING &&
 		    (_mission_item.nav_cmd == NAV_CMD_WAYPOINT)) {
@@ -456,6 +458,8 @@ MissionBlock::is_mission_item_reached()
 								   bearing, fabsf(curr_sp.loiter_radius),
 								   &curr_sp.lat, &curr_sp.lon);
 			}
+
+			_pre_mission_item = _mission_item;
 
 			return true;
 		}

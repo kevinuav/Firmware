@@ -953,17 +953,18 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 					_mission_item.time_inside = 0.0f;
 				}
 
-				if(_mission_item.nav_cmd == NAV_CMD_WAYPOINT&& pos_sp_triplet->previous.valid )//加入dropbomb代码
+				if(_mission_item.nav_cmd == NAV_CMD_WAYPOINT) //加入dropbomb代码（因为这条代码只有在到达航点跳到下一个航点的时候才运行，所以计算出的新座标是以已经跳转了的下一个航点为基础，并不是以当前所指目标来算）
 				{
+					if(pos_sp_triplet->previous.valid )
+					{
+						warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
+						create_waypoint_from_line_and_dist(_mission_item.lat, _mission_item.lon,
+						_pre_mission_item.lat, _pre_mission_item.lon, -50.0,&_mission_item.lat, &_mission_item.lon);
 
-					warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
-					create_waypoint_from_line_and_dist(pos_sp_triplet->current.lat, pos_sp_triplet->current.lon,
-					 pos_sp_triplet->previous.lat, pos_sp_triplet->previous.lon, -10.0,&_mission_item.lat, &_mission_item.lon);
 
-
-					warnx("prelat=%f prelon=%f newlat=%f newlon=%f",pos_sp_triplet->previous.lat, pos_sp_triplet->previous.lon,_mission_item.lat, _mission_item.lon);
+						warnx("prelat=%f prelon=%f newlat=%f newlon=%f",pos_sp_triplet->previous.lat, pos_sp_triplet->previous.lon,_mission_item.lat, _mission_item.lon);
+					}
 				}
-
 				break;
 			}
 

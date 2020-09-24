@@ -151,6 +151,8 @@ protected:
 
 	mission_item_s _mission_item{};
 
+	mission_item_s _pre_mission_item;
+
 	bool _waypoint_position_reached{false};
 	bool _waypoint_yaw_reached{false};
 	bool _waypoint_position_reached_previously{false};
