@@ -179,6 +179,15 @@ MissionBlock::is_mission_item_reached()
 			if(time2drop(tar_xy,z,v_xy,v_z))
 			{
 				warnx("dropbomb!!!");
+				actuator_controls_s actuators = {};
+				actuators.timestamp = hrt_absolute_time();
+
+				// params[0] actuator number to be set 0..5 (corresponds to AUX outputs 1..6)
+				// params[1] new value for selected actuator in ms 900...2000
+				actuators.control[(int)_mission_item.params[0]] = 1.0f / 2000 * -_mission_item.params[1];
+
+				_actuator_pub.publish(actuators);
+
 			}
 
 			/* close to waypoint, but altitude error greater than twice acceptance 如果高度差太远*/
@@ -848,4 +857,15 @@ MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
 	if(tarz>=h)return true;
 	else return false;
 
+}
+
+void
+MissionBlock::wind_drift(float ratio,float wind_n,float wind_e,float h,double * drift_n,double * drift_e)
+{
+	double t = (double)sqrt(2.0 * (double)h /9.8);
+	const double n_rad = (double)wind_n*t*(double)ratio/ CONSTANTS_RADIUS_OF_EARTH;
+	const double e_rad = (double)wind_e*t*(double)ratio/ CONSTANTS_RADIUS_OF_EARTH;
+
+	* drift_n = math::degrees(n_rad);
+	* drift_e = math::degrees(e_rad);
 }

@@ -55,6 +55,7 @@
 #include <uORB/topics/vehicle_local_position.h>
 #include <uORB/uORB.h>
 #include <uORB/Subscription.hpp>
+#include <uORB/topics/wind_estimate.h>
 
 class Navigator;
 
@@ -145,6 +146,8 @@ protected:
 
 	void issue_command(const mission_item_s &item);
 
+	void wind_drift(float ratio,float wind_n,float wind_e,float h,double *drift_n,double * drift_e); //其中算出的东、北偏移量为角度
+
 	float get_time_inside(const mission_item_s &item) const ;
 
 	float get_absolute_altitude_for_item(const mission_item_s &mission_item) const;
@@ -165,8 +168,10 @@ protected:
 
 	uORB::Publication<actuator_controls_s>	_actuator_pub{ORB_ID(actuator_controls_2)};
 	uORB::Subscription  _local_pos_sub{ORB_ID(vehicle_local_position)};
+	uORB::Subscription  _wind_est_sub{ORB_ID(wind_estimate)};
 
 	vehicle_local_position_s           _local_position{};
+	wind_estimate_s			   _wind_est{};
 
 	float hor_vel(float x,float y);
 
