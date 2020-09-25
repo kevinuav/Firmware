@@ -957,6 +957,8 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 				{
 					if(pos_sp_triplet->previous.valid )
 					{
+						_target_pos.lat = _mission_item.lat;
+						_target_pos.lon = _mission_item.lon;
 						warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
 						create_waypoint_from_line_and_dist(_mission_item.lat, _mission_item.lon,
 						_pre_mission_item.lat, _pre_mission_item.lon, -50.0,&_mission_item.lat, &_mission_item.lon);
