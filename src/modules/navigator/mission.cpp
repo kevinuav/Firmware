@@ -953,25 +953,20 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 					_mission_item.time_inside = 0.0f;
 				}
 
-				if((_mission_item.nav_cmd == NAV_CMD_WAYPOINT) && pos_sp_triplet->previous.valid) //加入dropbomb代码（因为这条代码只有在到达航点跳到下一个航点的时候才运行，所以计算出的新座标是以已经跳转了的下一个航点为基础，并不是以当前所指目标来算）
+				if(((_mission_item.nav_cmd == NAV_CMD_WAYPOINT)||(_mission_item.nav_cmd ==NAV_CMD_LOITER_UNLIMITED))
+				 && pos_sp_triplet->previous.valid) //加入dropbomb代码（因为这条代码只有在到达航点跳到下一个航点的时候才运行，所以计算出的新座标是以已经跳转了的下一个航点为基础，并不是以当前所指目标来算）
 				{
-					if(_wind_est_sub.updated())
-					{
-						_wind_est_sub.copy(&_wind_est);
-					}
-					float ratio=0.8;
-					double drift_n;
-					double drift_e;
-					wind_drift(ratio,_wind_est.windspeed_north,_wind_est.windspeed_east,_mission_item.altitude,&drift_n,&drift_e);
+
+					wind_drift(windf,_mission_item.altitude,&driftn,&drifte);
 					_target_pos.lat = _mission_item.lat;
 					_target_pos.lon = _mission_item.lon;
 
-					warnx("drift_n=%f drift_e=%f",drift_n,drift_e);
-					_mission_item.lat-=drift_n;
-					_mission_item.lon-=drift_e;
+					warnx("drift_n=%f drift_e=%f",driftn,drifte);
+					_air_lat = _mission_item.lat-driftn;
+					_air_lon = _mission_item.lon-drifte;
 
 					warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
-					create_waypoint_from_line_and_dist(_mission_item.lat, _mission_item.lon,
+					create_waypoint_from_line_and_dist(_air_lat, _air_lon,
 					_pre_mission_item.lat, _pre_mission_item.lon, -50.0,&_mission_item.lat, &_mission_item.lon);
 					warnx("prelat=%f prelon=%f newlat=%f newlon=%f",_pre_mission_item.lat, _pre_mission_item.lon,_mission_item.lat, _mission_item.lon);
 				}

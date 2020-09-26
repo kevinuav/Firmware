@@ -92,6 +92,11 @@ public:
 	 */
 	static bool item_contains_marker(const mission_item_s &item);
 
+	float angleA2B(float an,float ae,float bn,float be);
+
+	float hor_vel(float x,float y);
+
+
 protected:
 	/**
 	 * Check if mission item has been reached
@@ -146,7 +151,7 @@ protected:
 
 	void issue_command(const mission_item_s &item);
 
-	void wind_drift(float ratio,float wind_n,float wind_e,float h,double *drift_n,double * drift_e); //其中算出的东、北偏移量为角度
+	void wind_drift(float windfactor,float h,double *drift_n,double * drift_e); //其中算出的东、北偏移量为角度
 
 	float get_time_inside(const mission_item_s &item) const ;
 
@@ -157,6 +162,19 @@ protected:
 	mission_item_s _pre_mission_item;
 
 	mission_item_s _target_pos;
+
+	double _air_lat;
+	double _air_lon;
+
+	float windf=0.8;
+
+	double driftn;
+	double drifte;
+
+
+	float vn;
+
+	float ve;
 
 	bool _waypoint_position_reached{false};
 	bool _waypoint_yaw_reached{false};
@@ -173,7 +191,7 @@ protected:
 	vehicle_local_position_s           _local_position{};
 	wind_estimate_s			   _wind_est{};
 
-	float hor_vel(float x,float y);
 
 	bool time2drop(float tarxy,float tarz,float vxy,float vz);
+
 };

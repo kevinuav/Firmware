@@ -577,7 +577,6 @@ MissionBlock::item_contains_position(const mission_item_s &item)
 	       item.nav_cmd == NAV_CMD_LOITER_TO_ALT ||
 	       item.nav_cmd == NAV_CMD_VTOL_TAKEOFF ||
 	       item.nav_cmd == NAV_CMD_VTOL_LAND ||
-	       item.nav_cmd == NAV_CMD_DROPBOMB ||
 	       item.nav_cmd == NAV_CMD_DO_FOLLOW_REPOSITION;
 }
 
@@ -860,12 +859,26 @@ MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
 }
 
 void
-MissionBlock::wind_drift(float ratio,float wind_n,float wind_e,float h,double * drift_n,double * drift_e)
+MissionBlock::wind_drift(float windfactor,float h,double * drift_n,double * drift_e)
 {
+	if(_wind_est_sub.updated())
+	{
+		_wind_est_sub.copy(&_wind_est);
+
 	double t = (double)sqrt(2.0 * (double)h /9.8);
-	const double n_rad = (double)wind_n*t*(double)ratio/ CONSTANTS_RADIUS_OF_EARTH;
-	const double e_rad = (double)wind_e*t*(double)ratio/ CONSTANTS_RADIUS_OF_EARTH;
+	const double n_rad = (double)_wind_est.windspeed_north*t*(double)windfactor/ CONSTANTS_RADIUS_OF_EARTH;
+	const double e_rad = (double)_wind_est.windspeed_east*t*(double)windfactor/ CONSTANTS_RADIUS_OF_EARTH;
 
 	* drift_n = math::degrees(n_rad);
 	* drift_e = math::degrees(e_rad);
+	}
+}
+
+
+float
+MissionBlock:: angleA2B(float an,float ae,float bn,float be)
+{
+	float cosa=(an*bn+ae*be)/sqrt((an*an+ae*ae)*(bn*bn+be*be));
+//	warnx("cosa=%f",(double)cosa);
+	return math::degrees(acosf(cosa));
 }

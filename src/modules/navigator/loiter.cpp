@@ -71,7 +71,29 @@ Loiter::on_active()
 	if (_navigator->get_reposition_triplet()->current.valid) {
 		reposition();
 	}
+	if(_local_pos_sub.updated()){     //读取飞机对地速度
+		_local_pos_sub.copy(&_local_position);
+	}
+	get_vector_to_next_waypoint(_navigator->get_global_position()->lat,_navigator->get_global_position()->lon
+					,_target_pos.lat,_target_pos.lon,&vn,&ve);
 
+	float angle=angleA2B(_local_position.vx,_local_position.vy,vn,ve);
+
+	warnx("angle=%f",(double)angle);
+
+
+	if(angle<(float)20.0)
+	{
+	wind_drift(windf,_navigator->get_global_position()->alt,&driftn,&drifte);
+	_air_lat = _target_pos.lat-driftn;
+	_air_lon = _target_pos.lon-drifte;
+	create_waypoint_from_line_and_dist(_air_lat,_air_lon,_navigator->get_global_position()->lat,_navigator->get_global_position()->lon,
+						-50.0,&_mission_item.lat,&_mission_item.lon);
+
+	_loiter_pos_set = false;
+
+	warnx("prelat=%f prelon=%f newlat=%f newlon=%f",_air_lat,_air_lon,_mission_item.lat,_mission_item.lon);
+	}
 	// reset the loiter position if we get disarmed
 	if (_navigator->get_vstatus()->arming_state != vehicle_status_s::ARMING_STATE_ARMED) {
 		_loiter_pos_set = false;
@@ -122,11 +144,13 @@ Loiter::reposition()
 	if (_navigator->get_vstatus()->arming_state != vehicle_status_s::ARMING_STATE_ARMED) {
 		return;
 	}
-
 	struct position_setpoint_triplet_s *rep = _navigator->get_reposition_triplet();
 
 	if (rep->current.valid) {
 		// set loiter position based on reposition command
+
+		_target_pos.lat = rep->current.lat;
+		_target_pos.lon = rep->current.lon;
 
 		// convert mission item to current setpoint
 		struct position_setpoint_triplet_s *pos_sp_triplet = _navigator->get_position_setpoint_triplet();
