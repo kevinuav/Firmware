@@ -122,6 +122,8 @@ public:
 	 */
 	bool circle_mode() { return _circle_mode; }
 
+	void set_circle_mode(bool x) {  _circle_mode=x; }
+
 	/**
 	 * Get the switch distance
 	 *

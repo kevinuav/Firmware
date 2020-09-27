@@ -73,7 +73,6 @@ bool
 MissionBlock::is_mission_item_reached()
 {
 	/* handle non-navigation or indefinite waypoints 这些没有航点位置要求的就直接返回true*/
-
 	switch (_mission_item.nav_cmd) {
 	case NAV_CMD_DO_SET_SERVO:
 		return true;
@@ -82,10 +81,10 @@ MissionBlock::is_mission_item_reached()
 	case NAV_CMD_VTOL_LAND:
 		return _navigator->get_land_detected()->landed;
 
-	case NAV_CMD_IDLE: /* fall through */
+/*	case NAV_CMD_IDLE: // fall through
 	case NAV_CMD_LOITER_UNLIMITED:
 		return false;
-
+*/
 	case NAV_CMD_DO_LAND_START:
 	case NAV_CMD_DO_TRIGGER_CONTROL:
 	case NAV_CMD_DO_DIGICAM_CONTROL:
@@ -131,7 +130,6 @@ MissionBlock::is_mission_item_reached()
 		/* do nothing, this is a 3D waypoint */
 		break;
 	}
-
 	hrt_abstime now = hrt_absolute_time();
 
 	if (!_navigator->get_land_detected()->landed && !_waypoint_position_reached) {
@@ -162,15 +160,19 @@ MissionBlock::is_mission_item_reached()
 
 		warnx("mission: lat=%f lon=%f",_mission_item.lat,_mission_item.lon);
 
+		warnx("curr_type=%d",_navigator->get_position_setpoint_triplet()->current.type);
+
 		/* FW special case for NAV_CMD_WAYPOINT to achieve altitude via loiter 如果是固定翼就对是否到达航点做特殊处理，而一般情况是用通用方法判断有没到达航点*/
 		if (_navigator->get_vstatus()->vehicle_type == vehicle_status_s::VEHICLE_TYPE_FIXED_WING &&
-		    (_mission_item.nav_cmd == NAV_CMD_WAYPOINT)) {
+		    ((_mission_item.nav_cmd == NAV_CMD_WAYPOINT)||(_navigator->get_position_setpoint_triplet()->current.type == position_setpoint_s::SETPOINT_TYPE_POSITION))) {
 
 			struct position_setpoint_s *curr_sp = &_navigator->get_position_setpoint_triplet()->current;
 
 			if(_local_pos_sub.updated()){     //读取飞机对地速度
 				_local_pos_sub.copy(&_local_position);
 			}
+
+			warnx("dropif");
 
 			float v_xy=hor_vel(_local_position.vx,_local_position.vy);
 			float v_z=(float)_local_position.vz;
@@ -188,6 +190,7 @@ MissionBlock::is_mission_item_reached()
 
 				_actuator_pub.publish(actuators);
 
+				_waypoint_position_reached = true;
 			}
 
 			/* close to waypoint, but altitude error greater than twice acceptance 如果高度差太远*/
@@ -196,7 +199,7 @@ MissionBlock::is_mission_item_reached()
 			    && (dist_xy < 2 * _navigator->get_loiter_radius())) {
 
 				/* SETPOINT_TYPE_POSITION -> SETPOINT_TYPE_LOITER 如果是普通航点模式*/
-				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_POSITION) {
+				if (curr_sp->type == position_setpoint_s::SETPOINT_TYPE_POSITION &&_waypoint_position_reached) {
 					curr_sp->type = position_setpoint_s::SETPOINT_TYPE_LOITER;
 					curr_sp->loiter_radius = _navigator->get_loiter_radius();
 					curr_sp->loiter_direction = 1;
@@ -663,6 +666,7 @@ MissionBlock::mission_item_to_position_setpoint(const mission_item_s &item, posi
 		}
 
 	// fall through
+
 	case NAV_CMD_LOITER_TIME_LIMIT:
 	case NAV_CMD_LOITER_UNLIMITED:
 		sp->type = position_setpoint_s::SETPOINT_TYPE_LOITER;

@@ -52,6 +52,7 @@ void
 Loiter::on_inactive()
 {
 	_loiter_pos_set = false;
+	_seted = false;
 }
 
 void
@@ -78,11 +79,10 @@ Loiter::on_active()
 					,_target_pos.lat,_target_pos.lon,&vn,&ve);
 
 	float angle=angleA2B(_local_position.vx,_local_position.vy,vn,ve);
+	struct position_setpoint_triplet_s *cur_sp = _navigator->get_reposition_triplet();
+//	warnx("angle=%f",(double)angle);
 
-	warnx("angle=%f",(double)angle);
-
-
-	if(angle<(float)20.0)
+	if(angle<(float)20.0 && (!_seted))
 	{
 	wind_drift(windf,_navigator->get_global_position()->alt,&driftn,&drifte);
 	_air_lat = _target_pos.lat-driftn;
@@ -93,10 +93,19 @@ Loiter::on_active()
 	_loiter_pos_set = false;
 
 	warnx("prelat=%f prelon=%f newlat=%f newlon=%f",_air_lat,_air_lon,_mission_item.lat,_mission_item.lon);
+	cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
+	_seted = true;
 	}
 	// reset the loiter position if we get disarmed
 	if (_navigator->get_vstatus()->arming_state != vehicle_status_s::ARMING_STATE_ARMED) {
 		_loiter_pos_set = false;
+	}
+
+	warnx("reach=%d",(int)_waypoint_position_reached);
+
+	if(is_mission_item_reached())
+	{
+		cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
 	}
 }
 
@@ -146,6 +155,9 @@ Loiter::reposition()
 	}
 	struct position_setpoint_triplet_s *rep = _navigator->get_reposition_triplet();
 
+
+
+
 	if (rep->current.valid) {
 		// set loiter position based on reposition command
 
@@ -161,11 +173,15 @@ Loiter::reposition()
 		pos_sp_triplet->previous.alt = _navigator->get_global_position()->alt;
 		memcpy(&pos_sp_triplet->current, &rep->current, sizeof(rep->current));
 		pos_sp_triplet->next.valid = false;
+		pos_sp_triplet->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
 
 		_navigator->set_can_loiter_at_sp(pos_sp_triplet->current.type == position_setpoint_s::SETPOINT_TYPE_LOITER);
 		_navigator->set_position_setpoint_triplet_updated();
 
 		// mark this as done
 		memset(rep, 0, sizeof(*rep));
+		_seted = false;
+		_waypoint_position_reached = false;
+
 	}
 }

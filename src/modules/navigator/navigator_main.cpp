@@ -270,7 +270,7 @@ Navigator::run()
 
 					rep->current.loiter_radius = get_loiter_radius();
 					rep->current.loiter_direction = 1;
-					rep->current.type = position_setpoint_s::SETPOINT_TYPE_LOITER;
+					rep->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
 
 					// If no argument for ground speed, use default value.
 					//看看传入参数中有没有空速，没有就用默认值

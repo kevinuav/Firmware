@@ -68,4 +68,8 @@ private:
 	void set_loiter_position();
 
 	bool _loiter_pos_set{false};
+
+	bool _seted{false};
+
+
 };

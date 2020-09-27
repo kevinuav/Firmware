@@ -176,6 +176,7 @@ protected:
 
 	float ve;
 
+
 	bool _waypoint_position_reached{false};
 	bool _waypoint_yaw_reached{false};
 	bool _waypoint_position_reached_previously{false};
