@@ -957,13 +957,13 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 				 && pos_sp_triplet->previous.valid) //加入dropbomb代码（因为这条代码只有在到达航点跳到下一个航点的时候才运行，所以计算出的新座标是以已经跳转了的下一个航点为基础，并不是以当前所指目标来算）
 				{
 
-					wind_drift(windf,_mission_item.altitude,&driftn,&drifte);
+					wind_drift(_windf,_mission_item.altitude,&_driftn,&_drifte);
 					_target_pos.lat = _mission_item.lat;
 					_target_pos.lon = _mission_item.lon;
 
-					warnx("drift_n=%f drift_e=%f",driftn,drifte);
-					_air_lat = _mission_item.lat-driftn;
-					_air_lon = _mission_item.lon-drifte;
+					warnx("drift_n=%f drift_e=%f",_driftn,_drifte);
+					_air_lat = _mission_item.lat-_driftn;
+					_air_lon = _mission_item.lon-_drifte;
 
 					warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
 					create_waypoint_from_line_and_dist(_air_lat, _air_lon,

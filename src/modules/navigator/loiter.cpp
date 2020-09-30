@@ -76,17 +76,17 @@ Loiter::on_active()
 		_local_pos_sub.copy(&_local_position);
 	}
 	get_vector_to_next_waypoint(_navigator->get_global_position()->lat,_navigator->get_global_position()->lon
-					,_target_pos.lat,_target_pos.lon,&vn,&ve);
+					,_target_pos.lat,_target_pos.lon,&_vn,&_ve);
 
-	float angle=angleA2B(_local_position.vx,_local_position.vy,vn,ve);
+	float angle=angleA2B(_local_position.vx,_local_position.vy,_vn,_ve);
 	struct position_setpoint_triplet_s *cur_sp = _navigator->get_reposition_triplet();
 //	warnx("angle=%f",(double)angle);
 
 	if(angle<(float)20.0 && (!_seted))
 	{
-	wind_drift(windf,_navigator->get_global_position()->alt,&driftn,&drifte);
-	_air_lat = _target_pos.lat-driftn;
-	_air_lon = _target_pos.lon-drifte;
+	wind_drift(_windf,_navigator->get_global_position()->alt,&_driftn,&_drifte);
+	_air_lat = _target_pos.lat-_driftn;
+	_air_lon = _target_pos.lon-_drifte;
 	create_waypoint_from_line_and_dist(_air_lat,_air_lon,_navigator->get_global_position()->lat,_navigator->get_global_position()->lon,
 						-50.0,&_mission_item.lat,&_mission_item.lon);
 
@@ -105,7 +105,7 @@ Loiter::on_active()
 
 	if(is_mission_item_reached())
 	{
-		cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
+		cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_LOITER;
 	}
 }
 

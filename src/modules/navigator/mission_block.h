@@ -166,20 +166,26 @@ protected:
 	double _air_lat;
 	double _air_lon;
 
-	float windf=0.8;
+	float _windf=0.8;
 
-	double driftn;
-	double drifte;
+	double _driftn;
+	double _drifte;
+
+	double _tar_lat;
+	double _tar_lon;
+	double _tar_h;
 
 
-	float vn;
+	float _vn;
 
-	float ve;
+	float _ve;
 
 
 	bool _waypoint_position_reached{false};
 	bool _waypoint_yaw_reached{false};
 	bool _waypoint_position_reached_previously{false};
+
+	bool _loiter_pos_set{false};
 
 	hrt_abstime _time_first_inside_orbit{0};
 	hrt_abstime _action_start{0};
@@ -192,7 +198,13 @@ protected:
 	vehicle_local_position_s           _local_position{};
 	wind_estimate_s			   _wind_est{};
 
+	bool _seted{false};
 
-	bool time2drop(float tarxy,float tarz,float vxy,float vz);
+
+	bool _time2drop(float tarxy,float tarz,float vxy,float vz);
+
+	bool _drop_target2sp(double lat,double lon, float h);
+
+	bool is_droped();
 
 };

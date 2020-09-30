@@ -178,7 +178,7 @@ MissionBlock::is_mission_item_reached()
 			float v_z=(float)_local_position.vz;
 			float z=-(float)_local_position.z;
 		//	warnx("%f,%f,%f",(double)v_xy,(double)v_z,(double)dist_xy);
-			if(time2drop(tar_xy,z,v_xy,v_z))
+			if(_time2drop(tar_xy,z,v_xy,v_z))
 			{
 				warnx("dropbomb!!!");
 				actuator_controls_s actuators = {};
@@ -851,7 +851,7 @@ MissionBlock::hor_vel(float x,float y)
 
 
 bool
-MissionBlock::time2drop(float tarxy,float tarz,float vxy,float vz)
+MissionBlock::_time2drop(float tarxy,float tarz,float vxy,float vz)
 {
 	float t=tarxy/vxy;
 
@@ -886,3 +886,40 @@ MissionBlock:: angleA2B(float an,float ae,float bn,float be)
 //	warnx("cosa=%f",(double)cosa);
 	return math::degrees(acosf(cosa));
 }
+
+bool
+MissionBlock:: _drop_target2sp(double lat,double lon, float h)
+{
+	_target_pos.lat=lat;
+	_target_pos.lon=lon;
+	if (_navigator->get_reposition_triplet()->current.valid)
+	{
+
+	if(_local_pos_sub.updated()){     //读取飞机对地速度
+		_local_pos_sub.copy(&_local_position);
+	}
+	get_vector_to_next_waypoint(_navigator->get_global_position()->lat,_navigator->get_global_position()->lon
+					,_target_pos.lat,_target_pos.lon,&_vn,&_ve);
+
+	float angle=angleA2B(_local_position.vx,_local_position.vy,_vn,_ve);
+	struct position_setpoint_triplet_s *cur_sp = _navigator->get_reposition_triplet();
+//	warnx("angle=%f",(double)angle);
+
+	if(angle<(float)20.0 && (!_seted))
+	{
+	wind_drift(_windf,_navigator->get_global_position()->alt,&_driftn,&_drifte);
+	_air_lat = _target_pos.lat-_driftn;
+	_air_lon = _target_pos.lon-_drifte;
+	create_waypoint_from_line_and_dist(_air_lat,_air_lon,_navigator->get_global_position()->lat,_navigator->get_global_position()->lon,
+						-50.0,&_mission_item.lat,&_mission_item.lon);
+
+	_loiter_pos_set = false;
+
+	warnx("prelat=%f prelon=%f newlat=%f newlon=%f",_air_lat,_air_lon,_mission_item.lat,_mission_item.lon);
+	cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_POSITION;
+	_seted = true;
+	}
+	}
+	return _seted;
+}
+
