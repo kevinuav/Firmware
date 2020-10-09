@@ -138,7 +138,7 @@ MissionBlock::is_mission_item_reached()
 		float dist_xy = -1.0f;
 		float dist_z = -1.0f;
 
-		float tar_dist = -1.0f;
+
 		float tar_xy = -1.0f;
 		float tar_z = -1.0f;
 
@@ -152,11 +152,12 @@ MissionBlock::is_mission_item_reached()
 				_navigator->get_global_position()->alt,
 				&dist_xy, &dist_z); //这里传入去的dist_xy是平面距离，返回的dist是空间距离
 
-		tar_dist = get_distance_to_point_global_wgs84(_target_pos.lat, _target_pos.lon, altitude_amsl,
+		get_distance_to_point_global_wgs84(_target_pos.lat, _target_pos.lon, altitude_amsl,
 				_navigator->get_global_position()->lat,
 				_navigator->get_global_position()->lon,
 				_navigator->get_global_position()->alt,
 				&tar_xy, &tar_z);
+
 
 		warnx("mission: lat=%f lon=%f",_mission_item.lat,_mission_item.lon);
 
@@ -877,7 +878,7 @@ MissionBlock::wind_drift(float windfactor,float h,double * drift_n,double * drif
 float
 MissionBlock:: angleA2B(float an,float ae,float bn,float be)
 {
-	float cosa=(an*bn+ae*be)/sqrt((an*an+ae*ae)*(bn*bn+be*be));
+	float cosa=(an*bn+ae*be)/sqrtf((an*an+ae*ae)*(bn*bn+be*be));
 //	warnx("cosa=%f",(double)cosa);
 	return math::degrees(acosf(cosa));
 }
