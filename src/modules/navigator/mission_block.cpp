@@ -181,14 +181,9 @@ MissionBlock::is_mission_item_reached()
 			if(_time2drop(tar_xy,z,v_xy,v_z))
 			{
 				warnx("dropbomb!!!");
-				actuator_controls_s actuators = {};
-				actuators.timestamp = hrt_absolute_time();
 
-				// params[0] actuator number to be set 0..5 (corresponds to AUX outputs 1..6)
-				// params[1] new value for selected actuator in ms 900...2000
-				actuators.control[(int)_mission_item.params[0]] = 1.0f / 2000 * -_mission_item.params[1];
-
-				_actuator_pub.publish(actuators);
+				if(dropbomb())warnx("droped");
+				else warnx("no bomb to drop");
 
 				_waypoint_position_reached = true;
 			}
@@ -921,5 +916,27 @@ MissionBlock:: _drop_target2sp(double lat,double lon, float h)
 	}
 	}
 	return _seted;
+}
+
+bool
+MissionBlock::dropbomb()
+{
+	actuator_controls_s actuators = {};
+	actuators.timestamp = hrt_absolute_time();
+
+	static int bomb_num = 0;
+	// params[0] actuator number to be set 0..5 (corresponds to AUX outputs 1..6)
+	// params[1] new value for selected actuator in ms 900...2000
+	actuators.control[bomb_num] = 1.0f / 2000 *900; //明显，这里的舵机值是归一化后的值
+
+	_actuator_pub.publish(actuators);
+
+	if(bomb_num<=5)
+	{
+		bomb_num++;
+		return true;
+	}
+	else return false;
+
 }
 

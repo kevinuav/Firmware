@@ -103,6 +103,7 @@ Loiter::on_active()
 
 	warnx("reach=%d",(int)_waypoint_position_reached);
 
+
 	if(is_mission_item_reached())
 	{
 		cur_sp->current.type = position_setpoint_s::SETPOINT_TYPE_LOITER;

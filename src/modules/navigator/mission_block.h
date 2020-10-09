@@ -207,4 +207,6 @@ protected:
 
 	bool is_droped();
 
+	bool dropbomb();
+
 };
