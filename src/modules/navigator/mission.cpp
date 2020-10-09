@@ -958,8 +958,8 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 				{
 
 					wind_drift(_windf,_mission_item.altitude,&_driftn,&_drifte);
-					_target_pos.lat = _mission_item.lat;
-					_target_pos.lon = _mission_item.lon;
+					_target_pos.lat = pos_sp_triplet->next.lat;
+					_target_pos.lon = pos_sp_triplet->next.lon;
 
 					warnx("drift_n=%f drift_e=%f",_driftn,_drifte);
 					_air_lat = _mission_item.lat-_driftn;
@@ -967,7 +967,7 @@ Mission::set_mission_items()  //所有的任务航点和要做的相应动作的
 
 					warnx("lat=%f lon=%f",_mission_item.lat, _mission_item.lon);
 					create_waypoint_from_line_and_dist(_air_lat, _air_lon,
-					_pre_mission_item.lat, _pre_mission_item.lon, -50.0,&_mission_item.lat, &_mission_item.lon);
+					pos_sp_triplet->current.lat, pos_sp_triplet->current.lon, -50.0,&_mission_item.lat, &_mission_item.lon);
 					warnx("prelat=%f prelon=%f newlat=%f newlon=%f",_pre_mission_item.lat, _pre_mission_item.lon,_mission_item.lat, _mission_item.lon);
 				}
 				break;
