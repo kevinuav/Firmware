@@ -339,6 +339,7 @@ bool MixingOutput::update()
 		}
 	}
 
+
 	// check for motor test
 	if (!_armed.armed && !_armed.manual_lockdown) {
 		unsigned num_motor_test = motorTest();
@@ -366,6 +367,39 @@ bool MixingOutput::update()
 			if (_control_subs[i].copy(&_controls[i])) {
 				n_updates++;
 			}
+
+		if(!_engine_started)
+		{
+			const hrt_abstime now = hrt_absolute_time();
+			if (_throttle_armed )
+				{
+					if(_engine_start_time <= 1000000)
+					{
+						const hrt_abstime dt = now - _last_time;
+						_engine_start_time += dt;
+						_controls[i].control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+
+					}
+					else
+					{
+						_engine_start_time = 0;
+						_engine_started = true;
+					}
+				}
+			_last_time = now;
+		}
+
+
+		if(!_throttle_armed)
+		{
+			_controls[i].control[actuator_controls_s::INDEX_THROTTLE] = -0.1f;
+			_engine_started = false;
+		}
+
+
+
+	//	_controls[i].control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+		warnx("%f",(double)_controls[i].control[actuator_controls_s::INDEX_THROTTLE]);
 
 			/* During ESC calibration, we overwrite the throttle value. */
 			if (i == 0 && _armed.in_esc_calibration_mode) {
@@ -661,3 +695,4 @@ int MixingOutput::loadMixerThreadSafe(const char *buf, unsigned len)
 
 	return _command.result;
 }
+
