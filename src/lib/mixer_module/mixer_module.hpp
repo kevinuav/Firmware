@@ -246,9 +246,7 @@ private:
 
 	hrt_abstime _time_last_mix{0};
 
-	hrt_abstime _engine_start_time{0};
 
-	hrt_abstime _last_time{0};
 	unsigned _max_topic_update_interval_us{0}; ///< max _control_subs topic update interval (0=unlimited)
 
 	bool _throttle_armed{false};
@@ -284,5 +282,4 @@ private:
 
 	)
 
-	bool _engine_started = false;
 };

@@ -642,6 +642,51 @@ void FixedwingAttitudeControl::Run()
 		_actuators.timestamp = hrt_absolute_time();
 		_actuators.timestamp_sample = att.timestamp;
 
+		if(_armed_sub.update(&_armed))
+		{
+			_throttle_armed = _armed.armed;
+			if(_throttle_armed)
+			{
+			_armed_time = (uint32_t)_armed.timestamp/1000.0f - _armed.armed_time_ms;
+			warnx("armed time stamp is %d  time stamp is %d armed time is %d",_armed.armed_time_ms,(int)_armed.timestamp,_armed_time);
+			}
+			else
+			{
+				_armed_time = 0;
+			}
+		}
+
+		if(!_engine_started)
+		{
+			if (_throttle_armed )
+				{
+					if(_armed_time <= 2000)
+					{
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+					//	warnx("armed");
+					}
+					else
+					{
+						_engine_started = true;
+						warnx("engine started");
+					}
+				}
+				else
+				{
+					_armed_time = 0;
+				}
+
+		}
+
+
+		if(!_throttle_armed)
+		{
+			_actuators.control[actuator_controls_s::INDEX_THROTTLE] = -0.1f;
+			_engine_started = false;
+		}
+
+
+
 		/* Only publish if any of the proper modes are enabled */
 		if (_vcontrol_mode.flag_control_rates_enabled ||
 		    _vcontrol_mode.flag_control_attitude_enabled ||
