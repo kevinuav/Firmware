@@ -660,16 +660,24 @@ void FixedwingAttitudeControl::Run()
 		{
 			if (_throttle_armed )
 				{
-					if(_armed_time <= 2000)
+					if(_armed_time <= 1000)
 					{
-						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.0f;
 					//	warnx("armed");
 					}
-					else
+					else if(_armed_time <= 1500)
+					{
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.1f;
+					}else if(_armed_time <= 2000)
+					{
+						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
+					}else
 					{
 						_engine_started = true;
 						warnx("engine started");
+						/* code */
 					}
+
 				}
 				else
 				{
@@ -681,7 +689,7 @@ void FixedwingAttitudeControl::Run()
 
 		if(!_throttle_armed)
 		{
-			_actuators.control[actuator_controls_s::INDEX_THROTTLE] = -0.1f;
+			_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.1f;
 			_engine_started = false;
 		}
 
