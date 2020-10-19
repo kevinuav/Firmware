@@ -660,15 +660,12 @@ void FixedwingAttitudeControl::Run()
 		{
 			if (_throttle_armed )
 				{
-					if(_armed_time <= 1000)
+					if(_armed_time <= 500)
 					{
 						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.0f;
 					//	warnx("armed");
 					}
-					else if(_armed_time <= 1500)
-					{
-						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.1f;
-					}else if(_armed_time <= 2000)
+					else if(_armed_time <= 1000)
 					{
 						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 1.0f;
 					}else
@@ -691,6 +688,7 @@ void FixedwingAttitudeControl::Run()
 		{
 			_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.1f;
 			_engine_started = false;
+			warnx("engine cutted off");
 		}
 
 
