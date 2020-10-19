@@ -663,7 +663,6 @@ void FixedwingAttitudeControl::Run()
 					if(_armed_time <= 500)
 					{
 						_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.0f;
-					//	warnx("armed");
 					}
 					else if(_armed_time <= 1000)
 					{
