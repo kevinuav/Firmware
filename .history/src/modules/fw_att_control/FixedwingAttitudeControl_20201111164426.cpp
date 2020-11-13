@@ -687,7 +687,7 @@ void FixedwingAttitudeControl::Run()
 		{
 			_actuators.control[actuator_controls_s::INDEX_THROTTLE] = 0.1f;
 			_engine_started = false;
-		//	warnx("engine cutted off");
+			warnx("engine cutted off");
 		}
 
 
