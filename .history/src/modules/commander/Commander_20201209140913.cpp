@@ -2165,7 +2165,7 @@ Commander::run()
 					/* no failure reset flag */
 					_timestamp_engine_healthy = hrt_absolute_time();
 
-					if (status.engine_failure&&!engine_status.engine_failure)
+					if (status.engine_failure&&!engins_status.engine_failure)
 						{
 						status.engine_failure = false;
 						_status_changed = true;

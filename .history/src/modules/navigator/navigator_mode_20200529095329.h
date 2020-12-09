@@ -54,22 +54,22 @@ public:
 	void run(bool active);
 
 	/**
-	 * This function is called while the mode is inactive模式处于关闭之中
+	 * This function is called while the mode is inactive
 	 */
 	virtual void on_inactive();
 
 	/**
-	 * This function is called one time when mode becomes active, pos_sp_triplet must be initialized here启动一个关闭的模式
+	 * This function is called one time when mode becomes active, pos_sp_triplet must be initialized here
 	 */
 	virtual void on_activation();
 
 	/**
-	 * This function is called one time when mode becomes inactive关闭一个运行中的模式
+	 * This function is called one time when mode becomes inactive
 	 */
 	virtual void on_inactivation();
 
 	/**
-	 * This function is called while the mode is active模式在运行的时候
+	 * This function is called while the mode is active
 	 */
 	virtual void on_active();
 

@@ -1,6 +1,6 @@
-/****************************************************************************
+/***************************************************************************
  *
- *   Copyright (c) 2014 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2013-2014 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,51 +31,44 @@
  *
  ****************************************************************************/
 /**
- * @file navigator_mode.h
+ * @file enginefailure.h
+ * Helper class for a fixedwing engine failure mode
  *
- * Base class for different modes in navigator
- *
- * @author Julian Oes <julian@oes.ch>
- * @author Anton Babushkin <anton.babushkin@me.com>
+ * @author Thomas Gubler <thomasgubler@gmail.com>
  */
 
 #pragma once
 
+#include "navigator_mode.h"
+#include "mission_block.h"
+
 class Navigator;
 
-class NavigatorMode
+class EngineFailure : public MissionBlock
 {
 public:
-	NavigatorMode(Navigator *navigator);
-	virtual ~NavigatorMode() = default;
-	NavigatorMode(const NavigatorMode &) = delete;
-	NavigatorMode operator=(const NavigatorMode &) = delete;
+	EngineFailure(Navigator *navigator);
+	~EngineFailure() = default;
 
-	void run(bool active);
-
-	/**
-	 * This function is called while the mode is inactive模式处于关闭之中
-	 */
-	virtual void on_inactive();
-
-	/**
-	 * This function is called one time when mode becomes active, pos_sp_triplet must be initialized here启动一个关闭的模式
-	 */
-	virtual void on_activation();
-
-	/**
-	 * This function is called one time when mode becomes inactive关闭一个运行中的模式
-	 */
-	virtual void on_inactivation();
-
-	/**
-	 * This function is called while the mode is active模式在运行的时候
-	 */
-	virtual void on_active();
-
-protected:
-	Navigator *_navigator{nullptr};
+	void on_inactive() override;
+	void on_activation() override;
+	void on_active() override;
 
 private:
-	bool _active{false};
+	enum EFState {
+		EF_STATE_NONE = 0,
+		EF_STATE_LOITERDOWN = 1,
+		EF_STATE_RESTART = 2,
+	} _ef_state{EF_STATE_NONE};
+
+	/**
+	 * Set the DLL item
+	 */
+	void		set_ef_item();
+
+	/**
+	 * Move to next EF item
+	 */
+	void		advance_ef();
+
 };

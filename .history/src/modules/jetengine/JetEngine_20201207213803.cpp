@@ -528,11 +528,7 @@ int JetEngine::handle(int len)
 		uint8_t fault;
 		fault = strtol(bufptr, &endp,10);
 		_engine_status.fault=fault;
-		if(fault==6
-		||fault==8
-		||fault==10
-		||fault==14
-		||fault==31)_engine_status.engine_failure=true;
+		if(fault==6||fault==8||fault==10||fault==14)_engine_status.engine_failure=true;
 		else _engine_status.engine_failure=false;
 		warnx("fault=%d",fault);
 

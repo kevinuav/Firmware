@@ -81,8 +81,6 @@
 #include <uORB/topics/vehicle_land_detected.h>
 #include <uORB/topics/vehicle_local_position.h>
 #include <uORB/topics/vtol_vehicle_status.h>
-#include <uORB/topics/engine_status.h>
-
 
 using math::constrain;
 using systemlib::Hysteresis;
@@ -386,8 +384,6 @@ private:
 
 	// Subscriptions
 	uORB::Subscription					_actuator_controls_sub{ORB_ID_VEHICLE_ATTITUDE_CONTROLS};
-	uORB::Subscription					_engine_status_sub{ORB_ID(engine_status)};
-
 #if BOARD_NUMBER_BRICKS > 1
 	uORB::Subscription					_battery_subs[ORB_MULTI_MAX_INSTANCES] {
 		uORB::Subscription(ORB_ID(battery_status), 0),

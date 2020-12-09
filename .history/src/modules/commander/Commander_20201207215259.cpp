@@ -2137,20 +2137,22 @@ Commander::run()
 				_actuator_controls_sub.copy(&actuator_controls);
 
 				engine_status_s engine_status{};
-				_engine_status_sub.update(&engine_status);
 
-				const float throttle = actuator_controls.control[actuator_controls_s::INDEX_THROTTLE];
-				const float current2throttle = _battery_current / throttle;
+	//			const float throttle = actuator_controls.control[actuator_controls_s::INDEX_THROTTLE];
+	//			const float current2throttle = _battery_current / throttle;
 
-				if ((((throttle > _param_ef_throttle_thres.get()) && (current2throttle < _param_ef_current2throttle_thres.get()))
-				    || status.engine_failure)||engine_status.engine_failure)
+			//	if (((throttle > _param_ef_throttle_thres.get()) && (current2throttle < _param_ef_current2throttle_thres.get()))
+			//	    || status.engine_failure)
+				if(_engine_status_sub.update(&engine_status))
 				{
+					if(engine_status.engine_failure&& !status.engine_failure)
+						{
 
-						const float elapsed = hrt_elapsed_time(&_timestamp_engine_healthy) / 1e6f;
+					//	const float elapsed = hrt_elapsed_time(&_timestamp_engine_healthy) / 1e6f;
 
 						/* potential failure, measure time */
-						if (((_timestamp_engine_healthy > 0) && (elapsed > _param_ef_time_thres.get())   //这里置发动机故障
-						    && !status.engine_failure)||engine_status.engine_failure) {
+					//	if ((_timestamp_engine_healthy > 0) && (elapsed > _param_ef_time_thres.get())   //这里置发动机故障
+					//	    && !status.engine_failure) {
 
 							status.engine_failure = true;
 							_status_changed = true;
@@ -2160,17 +2162,17 @@ Commander::run()
 
 
 						}
-				}
 				 	else {
 					/* no failure reset flag */
-					_timestamp_engine_healthy = hrt_absolute_time();
+				//	_timestamp_engine_healthy = hrt_absolute_time();
 
-					if (status.engine_failure&&!engine_status.engine_failure)
+					if (status.engine_failure)
 						{
 						status.engine_failure = false;
 						_status_changed = true;
 						}
 				 	}
+				}
 			}
 		}
 
@@ -2351,8 +2353,7 @@ Commander::run()
 
 		_was_armed = armed.armed;
 
-		/*这里根据内部主状态 _internal_state 和一些具体状况决定如何切换导航状态 status
-		now set navigation state according to failsafe and main state */
+		/* now set navigation state according to failsafe and main state */
 		bool nav_state_changed = set_nav_state(&status,
 						       &armed,
 						       &_internal_state,

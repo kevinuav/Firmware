@@ -2149,8 +2149,8 @@ Commander::run()
 						const float elapsed = hrt_elapsed_time(&_timestamp_engine_healthy) / 1e6f;
 
 						/* potential failure, measure time */
-						if (((_timestamp_engine_healthy > 0) && (elapsed > _param_ef_time_thres.get())   //这里置发动机故障
-						    && !status.engine_failure)||engine_status.engine_failure) {
+						if ((_timestamp_engine_healthy > 0) && (elapsed > _param_ef_time_thres.get())   //这里置发动机故障
+						    && !status.engine_failure||engine_status.engine_failure) {
 
 							status.engine_failure = true;
 							_status_changed = true;
@@ -2165,7 +2165,7 @@ Commander::run()
 					/* no failure reset flag */
 					_timestamp_engine_healthy = hrt_absolute_time();
 
-					if (status.engine_failure&&!engine_status.engine_failure)
+					if (status.engine_failure&&!engins_status.engine_failure)
 						{
 						status.engine_failure = false;
 						_status_changed = true;
