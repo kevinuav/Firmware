@@ -4467,28 +4467,16 @@ protected:
 
 	bool send(const hrt_abstime t) override
 	{
-	//	distance_sensor_s dist_sensor;
+		//distance_sensor_s dist_sensor;
 		engine_status_s engine_status;
 
 	//	if (_distance_sensor_sub.update(&dist_sensor)) {
-			if(_engine_status_sub.update(&engine_status))
-			{
+		if (_distance_sensor_sub.update(&engine_status)) {
 			mavlink_distance_sensor_t msg{};
-			msg.current_distance =(uint32_t)engine_status.rpm*1000;
-			msg.id               = 1; //dist_sensor.id;
-			msg.max_distance     = 16000;//dist_sensor.max_distance * 1e2f;     // m to cm
-			msg.min_distance     = 0;//dist_sensor.min_distance * 1e2f;     // m to cm
-			msg.orientation      = 2;//dist_sensor.orientation;
-			msg.covariance       = 2.0;//dist_sensor.variance * 1e4f;         // m^2 to cm^2
 
-			mavlink_msg_distance_sensor_send_struct(_mavlink->get_channel(), &msg);
+			msg.time_boot_ms = dist_sensor.timestamp / 1000; /* us to ms */
 
-			return true;
-			}
-
-	//		msg.time_boot_ms = dist_sensor.timestamp / 1000; /* us to ms */
-
-	/*		switch (dist_sensor.type) {
+			switch (dist_sensor.type) {
 			case MAV_DISTANCE_SENSOR_ULTRASOUND:
 				msg.type = MAV_DISTANCE_SENSOR_ULTRASOUND;
 				break;
@@ -4508,7 +4496,7 @@ protected:
 
 		//	msg.current_distance = dist_sensor.current_distance * 1e2f; // m to cm
 
-			msg.current_distance =(float)engine_status.rpm;
+			msg.current_distance =engine_status.rpm;
 			msg.id               = dist_sensor.id;
 			msg.max_distance     = dist_sensor.max_distance * 1e2f;     // m to cm
 			msg.min_distance     = dist_sensor.min_distance * 1e2f;     // m to cm
@@ -4518,7 +4506,7 @@ protected:
 			mavlink_msg_distance_sensor_send_struct(_mavlink->get_channel(), &msg);
 
 			return true;
-*/	//	}
+		}
 
 		return false;
 	}

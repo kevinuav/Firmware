@@ -199,26 +199,9 @@ private:
 		cooling3=19,
 		cooling4=20,
 		idle2=21,
-		stoping=22,
+		stoped=22,
 		NoRC=23,
 		standby2=24,
 		restarting=29
 	 }engine_state;
-
-	 typedef enum
-	 {
-		normal=0,
-		cooling=1,
-		lowbat=2,
-		overbat=3,
-		lowrpm=4,
-		ignfail=5,
-		tempfail=7,
-		warningfail=9,
-		declutchfail=18,
-		flameout=22,
-		fuelfail=31,
-		overheat=32,
-		starterfail=50
-	 }engine_fault;
 };

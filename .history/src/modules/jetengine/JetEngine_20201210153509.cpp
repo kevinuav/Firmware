@@ -323,8 +323,7 @@ extern "C" __EXPORT int jetengine_main(int argc, char *argv[])
 int
 JetEngine::status()
 {
-	//const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_status[] = {"@HMI=0,0\r\n"};
+	const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 //	static uint64_t utimestamp = 0;
 
 /*
@@ -344,8 +343,7 @@ JetEngine::status()
 int
 JetEngine::start()
 {
-	//const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
-	const char jet_start[] ={"@C.HMI=1,0\r\n"};
+	const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
 	write(_uart4,jet_start, sizeof(jet_start));
 		return true;
 
@@ -354,8 +352,7 @@ JetEngine::start()
 int
 JetEngine::stop()
 {
-	//const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_stop[] = {"@C.HMI=0,0\r\n"};
+	const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 	write(_uart4,jet_stop, sizeof(jet_stop));
 		return true;
 
@@ -492,28 +489,28 @@ int JetEngine::handle(int len)
 		{
 		case engine_state::standby1	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
 		case engine_state::starting	:mavlink_log_critical(&mavlink_log_pub, "engine starting....");break;
-	//	case engine_state::igniting	:mavlink_log_critical(&mavlink_log_pub, "engine igniting...");break;
-	//	case engine_state::ignited	:mavlink_log_critical(&mavlink_log_pub, "engine ignited!");break;
-	//	case engine_state::warming1	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 1");break;
-	//	case engine_state::warming2	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 2");break;
-	//	case engine_state::warming3	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 3");break;
-	//	case engine_state::warming4	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 4");break;
-	//	case engine_state::warming5	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 5");break;
-	//	case engine_state::declutch	:mavlink_log_critical(&mavlink_log_pub, "engine declutch");break;
+		case engine_state::igniting	:mavlink_log_critical(&mavlink_log_pub, "engine igniting...");break;
+		case engine_state::ignited	:mavlink_log_critical(&mavlink_log_pub, "engine ignited!");break;
+		case engine_state::warming1	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 1");break;
+		case engine_state::warming2	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 2");break;
+		case engine_state::warming3	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 3");break;
+		case engine_state::warming4	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 4");break;
+		case engine_state::warming5	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 5");break;
+		case engine_state::declutch	:mavlink_log_critical(&mavlink_log_pub, "engine declutch");break;
 		case engine_state::idle1	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
-	//	case engine_state::accelerating	:mavlink_log_critical(&mavlink_log_pub, "engine accelerating");break;
+		case engine_state::accelerating	:mavlink_log_critical(&mavlink_log_pub, "engine accelerating");break;
 	//	case 12	:mavlink_log_critical(&mavlink_log_pub, "engine ");break;
 	//	case 13	:mavlink_log_critical(&mavlink_log_pub, "engine ");break;
 	//	case 14	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 15	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 16	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
-		case engine_state::cooling1	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down");break;
-	//	case engine_state::cooling2	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down2");break;
-	//	case engine_state::cooling3	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down3");break;
-	//	case engine_state::cooling4	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down4");break;
+		case engine_state::cooling1	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down1");break;
+		case engine_state::cooling2	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down2");break;
+		case engine_state::cooling3	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down3");break;
+		case engine_state::cooling4	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down4");break;
 		case engine_state::idle2	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
 		case engine_state::stoping	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
-	//	case engine_state::NoRC		:mavlink_log_critical(&mavlink_log_pub, "engine no RC input");break;
+		case engine_state::NoRC		:mavlink_log_critical(&mavlink_log_pub, "engine no RC input");break;
 		case engine_state::standby2	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
 	//	case 25	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 26	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;

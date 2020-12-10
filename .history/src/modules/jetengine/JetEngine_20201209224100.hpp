@@ -154,15 +154,9 @@ private:
 
 	uint8_t _fault;
 
-	uint8_t _last_fault;
+	uint64_t _engine_stop_time = 0;
 
-	hrt_abstime _engine_stop_time = 0;
-
-	hrt_abstime _now = 0;
-
-	bool _restarting = false;
-
-	bool _restarted = false;
+	bool restarting = false;
 
 	static int set_opt(int fd, int nSpeed, int nBits, char nEvent, int nStop);
 
@@ -179,46 +173,4 @@ private:
 	 int handle(int);
 
 	 int uart_init();
-
-	 typedef enum
-	 {
-		standby1=0,
-		starting=1,
-		igniting=2,
-		ignited=3,
-		warming1=4,
-		warming2=5,
-		warming3=6,
-		warming4=7,
-		warming5=8,
-		declutch=9,
-		idle1=10,
-		accelerating=11,
-		cooling1=17,
-		cooling2=18,
-		cooling3=19,
-		cooling4=20,
-		idle2=21,
-		stoping=22,
-		NoRC=23,
-		standby2=24,
-		restarting=29
-	 }engine_state;
-
-	 typedef enum
-	 {
-		normal=0,
-		cooling=1,
-		lowbat=2,
-		overbat=3,
-		lowrpm=4,
-		ignfail=5,
-		tempfail=7,
-		warningfail=9,
-		declutchfail=18,
-		flameout=22,
-		fuelfail=31,
-		overheat=32,
-		starterfail=50
-	 }engine_fault;
 };

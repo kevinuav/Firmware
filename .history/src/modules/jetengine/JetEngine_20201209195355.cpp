@@ -112,9 +112,11 @@ while(1){
 					}else
 					{
 						_engine_started = true;
-						start();
-						warnx("engine start");
-						mavlink_log_critical(&mavlink_log_pub, "engine start");
+						if(_status==0)
+						{start();
+						warnx("engine started");
+						mavlink_log_critical(&mavlink_log_pub, "engine started");
+						}
 					}
 
 
@@ -323,8 +325,7 @@ extern "C" __EXPORT int jetengine_main(int argc, char *argv[])
 int
 JetEngine::status()
 {
-	//const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_status[] = {"@HMI=0,0\r\n"};
+	const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 //	static uint64_t utimestamp = 0;
 
 /*
@@ -344,8 +345,7 @@ JetEngine::status()
 int
 JetEngine::start()
 {
-	//const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
-	const char jet_start[] ={"@C.HMI=1,0\r\n"};
+	const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
 	write(_uart4,jet_start, sizeof(jet_start));
 		return true;
 
@@ -354,8 +354,7 @@ JetEngine::start()
 int
 JetEngine::stop()
 {
-	//const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_stop[] = {"@C.HMI=0,0\r\n"};
+	const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 	write(_uart4,jet_stop, sizeof(jet_stop));
 		return true;
 
@@ -490,37 +489,37 @@ int JetEngine::handle(int len)
 		{
 		switch(_status)
 		{
-		case engine_state::standby1	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
-		case engine_state::starting	:mavlink_log_critical(&mavlink_log_pub, "engine starting....");break;
-	//	case engine_state::igniting	:mavlink_log_critical(&mavlink_log_pub, "engine igniting...");break;
-	//	case engine_state::ignited	:mavlink_log_critical(&mavlink_log_pub, "engine ignited!");break;
-	//	case engine_state::warming1	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 1");break;
-	//	case engine_state::warming2	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 2");break;
-	//	case engine_state::warming3	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 3");break;
-	//	case engine_state::warming4	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 4");break;
-	//	case engine_state::warming5	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 5");break;
-	//	case engine_state::declutch	:mavlink_log_critical(&mavlink_log_pub, "engine declutch");break;
-		case engine_state::idle1	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
-	//	case engine_state::accelerating	:mavlink_log_critical(&mavlink_log_pub, "engine accelerating");break;
+		case 0	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
+		case 1	:mavlink_log_critical(&mavlink_log_pub, "engine starting....");break;
+		case 2	:mavlink_log_critical(&mavlink_log_pub, "engine igniting...");break;
+		case 3	:mavlink_log_critical(&mavlink_log_pub, "engine ignited!");break;
+		case 4	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 1");break;
+		case 5	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 2");break;
+		case 6	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 3");break;
+		case 7	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 4");break;
+		case 8	:mavlink_log_critical(&mavlink_log_pub, "engine warming up 5");break;
+		case 9	:mavlink_log_critical(&mavlink_log_pub, "engine declutch");break;
+		case 10	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
+		case 11	:mavlink_log_critical(&mavlink_log_pub, "engine accelerating");break;
 	//	case 12	:mavlink_log_critical(&mavlink_log_pub, "engine ");break;
 	//	case 13	:mavlink_log_critical(&mavlink_log_pub, "engine ");break;
 	//	case 14	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 15	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 16	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
-		case engine_state::cooling1	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down");break;
-	//	case engine_state::cooling2	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down2");break;
-	//	case engine_state::cooling3	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down3");break;
-	//	case engine_state::cooling4	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down4");break;
-		case engine_state::idle2	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
-		case engine_state::stoping	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
-	//	case engine_state::NoRC		:mavlink_log_critical(&mavlink_log_pub, "engine no RC input");break;
-		case engine_state::standby2	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
+		case 17	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down1");break;
+		case 18	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down2");break;
+		case 19	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down3");break;
+		case 20	:mavlink_log_critical(&mavlink_log_pub, "engine cooling down4");break;
+		case 21	:mavlink_log_critical(&mavlink_log_pub, "engine idle");break;
+		case 22	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
+		case 23	:mavlink_log_critical(&mavlink_log_pub, "engine no RC input");break;
+		case 24	:mavlink_log_critical(&mavlink_log_pub, "engine stand by");break;
 	//	case 25	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 26	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 	//	case 27	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
-	//	case 28	:mavlink_log_critical(&mavlink_log_pub, "engine maximum power");break;
-		case engine_state::restarting	:mavlink_log_critical(&mavlink_log_pub, "engine restarting...");break;
-	//	case 30	:mavlink_log_critical(&mavlink_log_pub, "throttle curve learning");break;
+		case 28	:mavlink_log_critical(&mavlink_log_pub, "engine maximum power");break;
+		case 29	:mavlink_log_critical(&mavlink_log_pub, "engine restarting...");break;
+	//	case 30	:mavlink_log_critical(&mavlink_log_pub, "engine stop");break;
 
 
 		default: if(_status>30)mavlink_log_critical(&mavlink_log_pub, "engine error");
@@ -531,38 +530,17 @@ int JetEngine::handle(int len)
 	}else
 	if (memcmp(_rx_buffer+7, "va5", 3) == 0)
 	{
-
-		_fault = strtol(bufptr, &endp,10);
-		_engine_status.fault=_fault;
-		_now = hrt_absolute_time();
-		if(!_last_fault&&_fault==engine_fault::flameout)
-		{
-			_engine_stop_time=hrt_absolute_time();
-			mavlink_log_critical(&mavlink_log_pub, "engine flame out!");
-		}
-		if(_now-_engine_stop_time>200000)   //waiting for the ECU's responding 0.2s
-			{
-				if(_status==engine_state::restarting) _restarting = true;    //restarting coz it response "restarting"
-			}
-		if(_restarting)
-		{
-			if(_now-_engine_stop_time>10000000)  //waiting for 3 seconds coz the restarting procedure take about 2.5s
-			{
-			if(_fault==engine_fault::flameout)        //make sure if the engine has been restarted successfully?
-			{
-				_restarted = false;
-			}
-			else
-			{
-				_restarted = true;
-			}
-			_restarting = false;	//no matter if is the restarting success the restarting procedure has timeout and finish
-			}
-		}
-		if(_fault==engine_fault::ignfail||(_fault==engine_fault::flameout&&!_restarted&&!_restarting))_engine_status.engine_failure=true; //so if the engine has flameout it should be in the restarting procedure or already has been restarted successfully
+		uint8_t fault;
+		fault = strtol(bufptr, &endp,10);
+		_engine_status.fault=fault;
+		if(fault==6
+		||fault==8
+		||fault==10
+		||fault==14
+		||fault==31)_engine_status.engine_failure=true;
 		else _engine_status.engine_failure=false;
-		warnx("fault=%d",_fault);
-		_last_fault = _fault;
+		warnx("fault=%d",fault);
+
 	}
 
 	if (memcmp(_rx_buffer+7, "t7", 2) == 0)

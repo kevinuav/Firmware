@@ -212,11 +212,10 @@ private:
 		lowbat=2,
 		overbat=3,
 		lowrpm=4,
-		ignfail=5,
+		ignifail=5,
 		tempfail=7,
 		warningfail=9,
 		declutchfail=18,
-		flameout=22,
 		fuelfail=31,
 		overheat=32,
 		starterfail=50

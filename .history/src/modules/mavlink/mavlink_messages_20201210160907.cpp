@@ -4476,8 +4476,8 @@ protected:
 			mavlink_distance_sensor_t msg{};
 			msg.current_distance =(uint32_t)engine_status.rpm*1000;
 			msg.id               = 1; //dist_sensor.id;
-			msg.max_distance     = 16000;//dist_sensor.max_distance * 1e2f;     // m to cm
-			msg.min_distance     = 0;//dist_sensor.min_distance * 1e2f;     // m to cm
+			msg.max_distance     = 16000.0;//dist_sensor.max_distance * 1e2f;     // m to cm
+			msg.min_distance     = 0.0;//dist_sensor.min_distance * 1e2f;     // m to cm
 			msg.orientation      = 2;//dist_sensor.orientation;
 			msg.covariance       = 2.0;//dist_sensor.variance * 1e4f;         // m^2 to cm^2
 

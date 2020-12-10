@@ -323,8 +323,7 @@ extern "C" __EXPORT int jetengine_main(int argc, char *argv[])
 int
 JetEngine::status()
 {
-	//const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_status[] = {"@HMI=0,0\r\n"};
+	const char jet_status[] = {'@', 'H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 //	static uint64_t utimestamp = 0;
 
 /*
@@ -344,8 +343,7 @@ JetEngine::status()
 int
 JetEngine::start()
 {
-	//const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
-	const char jet_start[] ={"@C.HMI=1,0\r\n"};
+	const char jet_start[] = {'@', 'C','.','H', 'M', 'I', '=', '1', ',', '0','\r','\n'};
 	write(_uart4,jet_start, sizeof(jet_start));
 		return true;
 
@@ -354,8 +352,7 @@ JetEngine::start()
 int
 JetEngine::stop()
 {
-	//const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
-	const char jet_stop[] = {"@C.HMI=0,0\r\n"};
+	const char jet_stop[] = {'@', 'C','.','H', 'M', 'I', '=', '0', ',', '0','\r','\n'};
 	write(_uart4,jet_stop, sizeof(jet_stop));
 		return true;
 

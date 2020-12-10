@@ -4474,7 +4474,7 @@ protected:
 			if(_engine_status_sub.update(&engine_status))
 			{
 			mavlink_distance_sensor_t msg{};
-			msg.current_distance =(uint32_t)engine_status.rpm*1000;
+			msg.current_distance =(float)engine_status.rpm*100;
 			msg.id               = 1; //dist_sensor.id;
 			msg.max_distance     = 16000;//dist_sensor.max_distance * 1e2f;     // m to cm
 			msg.min_distance     = 0;//dist_sensor.min_distance * 1e2f;     // m to cm
