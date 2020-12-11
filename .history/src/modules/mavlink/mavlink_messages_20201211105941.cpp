@@ -4477,17 +4477,14 @@ protected:
 			static bool iftemp;
 			if(iftemp)
 			{
-			msg.current_distance =(uint16_t)engine_status.rpm*1000;
+			msg.current_distance =(uint32_t)engine_status.rpm*1000;
 			msg.id               = 0; //rpm.id;
-			iftemp=0;
 			}else
 			{
-			msg.current_distance =(uint16_t)engine_status.temp*100;
+			msg.current_distance =(uint32_t)engine_status.temp;
 			msg.id               = 1; //temp.id;
-			iftemp=1;
 			}
 			iftemp=!iftemp;
-			msg.horizontal_fov=engine_status.vol;
 			msg.max_distance     = 16000;//dist_sensor.max_distance * 1e2f;     // m to cm
 			msg.min_distance     = 0;//dist_sensor.min_distance * 1e2f;     // m to cm
 			msg.orientation      = 2;//dist_sensor.orientation;

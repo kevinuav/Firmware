@@ -466,6 +466,7 @@ int JetEngine::handle(int len)
 	if (memcmp(_rx_buffer+7, "t11", 3) == 0)
 	{
 		double vol=0;
+		if(val)
 		vol = strtod(bufptr, &endp);
 		_engine_status.vol=vol;
 		warnx("pump vol=%f",vol);

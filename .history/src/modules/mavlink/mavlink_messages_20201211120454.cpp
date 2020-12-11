@@ -4474,17 +4474,14 @@ protected:
 			if(_engine_status_sub.update(&engine_status))
 			{
 			mavlink_distance_sensor_t msg{};
-			static bool iftemp;
 			if(iftemp)
 			{
 			msg.current_distance =(uint16_t)engine_status.rpm*1000;
 			msg.id               = 0; //rpm.id;
-			iftemp=0;
 			}else
 			{
 			msg.current_distance =(uint16_t)engine_status.temp*100;
 			msg.id               = 1; //temp.id;
-			iftemp=1;
 			}
 			iftemp=!iftemp;
 			msg.horizontal_fov=engine_status.vol;
