@@ -119,7 +119,7 @@
 #include <uORB/topics/vtol_vehicle_status.h>
 #include <uORB/topics/wind_estimate.h>
 #include <uORB/topics/engine_status.h>
-
+#include <uORB/topics/efi_status.h>
 
 
 using matrix::Vector3f;
@@ -5276,22 +5276,22 @@ protected:
 };
 
 
-class MavlinkStreamJEStatus : public MavlinkStream
+class MavlinkStreamEFIStatus : public MavlinkStream
 {
 public:
 	const char *get_name() const override
 	{
-		return MavlinkStreamJEStatus::get_name_static();
+		return MavlinkStreamEFIStatus::get_name_static();
 	}
 
 	static constexpr const char *get_name_static()
 	{
-		return "JE_STATUS";
+		return "EFI_STATUS";
 	}
 
 	static constexpr uint16_t get_id_static()
 	{
-		return MAVLINK_MSG_ID_JE_STATUS;
+		return MAVLINK_MSG_ID_EFI_STATUS;
 	}
 
 	uint16_t get_id() override
@@ -5301,23 +5301,23 @@ public:
 
 	static MavlinkStream *new_instance(Mavlink *mavlink)
 	{
-		return new MavlinkStreamJEStatus(mavlink);
+		return new MavlinkStreamEFIStatus(mavlink);
 	}
 
 	unsigned get_size() override
 	{
-		return MAVLINK_MSG_ID_JE_STATUS_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+		return MAVLINK_MSG_ID_EFI_STATUS_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
 	}
 
 private:
 	uORB::Subscription _engine_status_sub{ORB_ID(engine_status)};
 
 	/* do not allow top copying this class */
-	MavlinkStreamJEStatus(MavlinkStreamJEStatus &) = delete;
-	MavlinkStreamJEStatus &operator = (const MavlinkStreamJEStatus &) = delete;
+	MavlinkStreamEFIStatus(MavlinkStreamEFIStatus &) = delete;
+	MavlinkStreamEFIStatus &operator = (const MavlinkStreamEFIStatus &) = delete;
 
 protected:
-	explicit MavlinkStreamJEStatus(Mavlink *mavlink) : MavlinkStream(mavlink)
+	explicit MavlinkStreamEFIStatus(Mavlink *mavlink) : MavlinkStream(mavlink)
 	{
 	}
 
@@ -5329,7 +5329,7 @@ protected:
 			engine_status_s engine_status;
 			_engine_status_sub.copy(&engine_status);
 
-			mavlink_je_status_t msg{}; //这里填充MAVLINK数据
+			mavlink_efi_status_t msg{}; //这里填充MAVLINK数据
 
 			msg.ecu_index = engine_status.status;
  			msg.rpm = engine_status.rpm; /*<  RPM*/
@@ -5350,7 +5350,7 @@ protected:
 			//  In the future, this should somehow determine the "main" battery, or use the "type" field of BATTERY_STATUS
 			//  to determine which battery is more important at a given time.
 
-			mavlink_msg_je_status_send_struct(_mavlink->get_channel(), &msg); //这里发送打好包的MAVLINK数据
+			mavlink_msg_efi_status_send_struct(_mavlink->get_channel(), &msg); //这里发送打好包的MAVLINK数据
 
 			return true;
 		}
@@ -5361,7 +5361,7 @@ protected:
 
 static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamHeartbeat>(),
-	create_stream_list_item<MavlinkStreamStatustext>(),
+/*	create_stream_list_item<MavlinkStreamStatustext>(),
 	create_stream_list_item<MavlinkStreamCommandLong>(),
 	create_stream_list_item<MavlinkStreamSysStatus>(),
 	create_stream_list_item<MavlinkStreamBatteryStatus>(),
@@ -5424,7 +5424,7 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamFlightInformation>(),
 	create_stream_list_item<MavlinkStreamStorageInformation>(),
 	create_stream_list_item<MavlinkStreamRawRpm>(),
-	create_stream_list_item<MavlinkStreamJEStatus>()
+*/	create_stream_list_item<MavlinkStreamEFIStatus>()
 };
 
 const char *get_stream_name(const uint16_t msg_id)

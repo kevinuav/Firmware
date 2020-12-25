@@ -5291,7 +5291,7 @@ public:
 
 	static constexpr uint16_t get_id_static()
 	{
-		return MAVLINK_MSG_ID_JE_STATUS;
+		return MAVLINK_MSG_ID_EFI_STATUS;
 	}
 
 	uint16_t get_id() override
@@ -5361,7 +5361,7 @@ protected:
 
 static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamHeartbeat>(),
-	create_stream_list_item<MavlinkStreamStatustext>(),
+/*	create_stream_list_item<MavlinkStreamStatustext>(),
 	create_stream_list_item<MavlinkStreamCommandLong>(),
 	create_stream_list_item<MavlinkStreamSysStatus>(),
 	create_stream_list_item<MavlinkStreamBatteryStatus>(),
@@ -5424,7 +5424,7 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamFlightInformation>(),
 	create_stream_list_item<MavlinkStreamStorageInformation>(),
 	create_stream_list_item<MavlinkStreamRawRpm>(),
-	create_stream_list_item<MavlinkStreamJEStatus>()
+*/	create_stream_list_item<MavlinkStreamJEStatus>()
 };
 
 const char *get_stream_name(const uint16_t msg_id)

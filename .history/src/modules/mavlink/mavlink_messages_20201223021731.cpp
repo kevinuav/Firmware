@@ -121,7 +121,6 @@
 #include <uORB/topics/engine_status.h>
 
 
-
 using matrix::Vector3f;
 using matrix::wrap_2pi;
 
@@ -5360,7 +5359,7 @@ protected:
 };
 
 static const StreamListItem streams_list[] = {
-	create_stream_list_item<MavlinkStreamHeartbeat>(),
+/*	create_stream_list_item<MavlinkStreamHeartbeat>(),
 	create_stream_list_item<MavlinkStreamStatustext>(),
 	create_stream_list_item<MavlinkStreamCommandLong>(),
 	create_stream_list_item<MavlinkStreamSysStatus>(),
@@ -5424,7 +5423,7 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamFlightInformation>(),
 	create_stream_list_item<MavlinkStreamStorageInformation>(),
 	create_stream_list_item<MavlinkStreamRawRpm>(),
-	create_stream_list_item<MavlinkStreamJEStatus>()
+*/	create_stream_list_item<MavlinkStreamJEStatus>()
 };
 
 const char *get_stream_name(const uint16_t msg_id)

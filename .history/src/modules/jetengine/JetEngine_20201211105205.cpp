@@ -81,12 +81,7 @@ while(1){
 
 	status();
 	px4_usleep(100000);
-/*	_engine_status.temp=70;
-	_engine_status.pump=93;
-	_engine_status.rpm=94;
-	_engine_status.status=64;
-	_engine_status_pub.publish(_engine_status);
-*/	if (_actuator.update(&_act)) {
+	if (_actuator.update(&_act)) {
 
 
 		if(_armed_sub.update(&_armed))
@@ -468,13 +463,6 @@ int JetEngine::handle(int len)
 		_engine_status.temp=temp;
 		warnx("temp=%f",temp);
 	}else
-	if (memcmp(_rx_buffer+7, "t11", 3) == 0)
-	{
-		double vol=0;
-		vol = strtod(bufptr, &endp);
-		_engine_status.vol=vol;
-		warnx("pump vol=%f",vol);
-	}else
 	if (memcmp(_rx_buffer+7, "va1", 3) == 0)
 	{
 		uint64_t rpm;
@@ -574,7 +562,8 @@ int JetEngine::handle(int len)
 		else _engine_status.engine_failure=false;
 		warnx("fault=%d",_fault);
 		_last_fault = _fault;
-	}else
+	}
+
 	if (memcmp(_rx_buffer+7, "t7", 2) == 0)
 	{
 		uint8_t min,sec;
@@ -586,7 +575,8 @@ int JetEngine::handle(int len)
 		_engine_status.running_time=running_time;
 		warnx("running time=%d:%d",min,sec);
 		warnx("running time in seconds=%d",running_time);
-	}else
+	}
+
 	if (memcmp(_rx_buffer+7, "j0", 2) == 0)
 	{
 		uint64_t read_elapsed = hrt_elapsed_time(&_last_read);

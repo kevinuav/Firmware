@@ -1593,7 +1593,6 @@ Mavlink::configure_streams_to_default(const char *configure_single_stream)
 		configure_stream_local("DEBUG_VECT", 1.0f);
 		configure_stream_local("DISTANCE_SENSOR", 0.1f);
 		configure_stream_local("EFI_STATUS", 10.0f);
-		configure_stream_local("JE_STATUS", 10.0f);
 		configure_stream_local("ESTIMATOR_STATUS", 0.5f);
 		configure_stream_local("EXTENDED_SYS_STATE", 1.0f);
 		configure_stream_local("GLOBAL_POSITION_INT", 5.0f);
@@ -1642,7 +1641,7 @@ Mavlink::configure_streams_to_default(const char *configure_single_stream)
 		configure_stream_local("DEBUG", 10.0f);
 		configure_stream_local("DEBUG_FLOAT_ARRAY", 10.0f);
 		configure_stream_local("DEBUG_VECT", 10.0f);
-		configure_stream_local("JE_STATUS", 10.0f);
+		configure_stream_local("EFI_STATUS", 10.0f);
 		configure_stream_local("ESTIMATOR_STATUS", 1.0f);
 		configure_stream_local("EXTENDED_SYS_STATE", 5.0f);
 		configure_stream_local("GLOBAL_POSITION_INT", 50.0f);
@@ -1752,7 +1751,7 @@ Mavlink::configure_streams_to_default(const char *configure_single_stream)
 		configure_stream_local("MOUNT_ORIENTATION", 10.0f);
 		configure_stream_local("ODOMETRY", 30.0f);
 
-		configure_stream_local("JE_STATUS", 10.0f);
+		configure_stream_local("EFI_STATUS", 10.0f);
 		configure_stream_local("ACTUATOR_CONTROL_TARGET0", 30.0f);
 		configure_stream_local("ADSB_VEHICLE", unlimited_rate);
 		configure_stream_local("ALTITUDE", 10.0f);

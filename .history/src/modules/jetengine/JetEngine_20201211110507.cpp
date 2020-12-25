@@ -81,12 +81,7 @@ while(1){
 
 	status();
 	px4_usleep(100000);
-/*	_engine_status.temp=70;
-	_engine_status.pump=93;
-	_engine_status.rpm=94;
-	_engine_status.status=64;
-	_engine_status_pub.publish(_engine_status);
-*/	if (_actuator.update(&_act)) {
+	if (_actuator.update(&_act)) {
 
 
 		if(_armed_sub.update(&_armed))
@@ -471,6 +466,7 @@ int JetEngine::handle(int len)
 	if (memcmp(_rx_buffer+7, "t11", 3) == 0)
 	{
 		double vol=0;
+		if(val)
 		vol = strtod(bufptr, &endp);
 		_engine_status.vol=vol;
 		warnx("pump vol=%f",vol);

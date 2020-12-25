@@ -121,7 +121,6 @@
 #include <uORB/topics/engine_status.h>
 
 
-
 using matrix::Vector3f;
 using matrix::wrap_2pi;
 

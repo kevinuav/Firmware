@@ -121,7 +121,6 @@
 #include <uORB/topics/engine_status.h>
 
 
-
 using matrix::Vector3f;
 using matrix::wrap_2pi;
 
@@ -4480,12 +4479,10 @@ protected:
 			{
 			msg.current_distance =(uint16_t)engine_status.rpm*1000;
 			msg.id               = 0; //rpm.id;
-			iftemp=0;
 			}else
 			{
 			msg.current_distance =(uint16_t)engine_status.temp*100;
 			msg.id               = 1; //temp.id;
-			iftemp=1;
 			}
 			iftemp=!iftemp;
 			msg.horizontal_fov=engine_status.vol;
@@ -5276,22 +5273,22 @@ protected:
 };
 
 
-class MavlinkStreamJEStatus : public MavlinkStream
+class MavlinkStreamEFIStatus : public MavlinkStream
 {
 public:
 	const char *get_name() const override
 	{
-		return MavlinkStreamJEStatus::get_name_static();
+		return MavlinkStreamEFIStatus::get_name_static();
 	}
 
 	static constexpr const char *get_name_static()
 	{
-		return "JE_STATUS";
+		return "EFI_STATUS";
 	}
 
 	static constexpr uint16_t get_id_static()
 	{
-		return MAVLINK_MSG_ID_JE_STATUS;
+		return MAVLINK_MSG_ID_EFI_STATUS;
 	}
 
 	uint16_t get_id() override
@@ -5301,23 +5298,23 @@ public:
 
 	static MavlinkStream *new_instance(Mavlink *mavlink)
 	{
-		return new MavlinkStreamJEStatus(mavlink);
+		return new MavlinkStreamEFIStatus(mavlink);
 	}
 
 	unsigned get_size() override
 	{
-		return MAVLINK_MSG_ID_JE_STATUS_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
+		return MAVLINK_MSG_ID_EFI_STATUS_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES;
 	}
 
 private:
 	uORB::Subscription _engine_status_sub{ORB_ID(engine_status)};
 
 	/* do not allow top copying this class */
-	MavlinkStreamJEStatus(MavlinkStreamJEStatus &) = delete;
-	MavlinkStreamJEStatus &operator = (const MavlinkStreamJEStatus &) = delete;
+	MavlinkStreamEFIStatus(MavlinkStreamEFIStatus &) = delete;
+	MavlinkStreamEFIStatus &operator = (const MavlinkStreamEFIStatus &) = delete;
 
 protected:
-	explicit MavlinkStreamJEStatus(Mavlink *mavlink) : MavlinkStream(mavlink)
+	explicit MavlinkStreamEFIStatus(Mavlink *mavlink) : MavlinkStream(mavlink)
 	{
 	}
 
@@ -5329,7 +5326,7 @@ protected:
 			engine_status_s engine_status;
 			_engine_status_sub.copy(&engine_status);
 
-			mavlink_je_status_t msg{}; //这里填充MAVLINK数据
+			mavlink_efi_status_t msg{}; //这里填充MAVLINK数据
 
 			msg.ecu_index = engine_status.status;
  			msg.rpm = engine_status.rpm; /*<  RPM*/
@@ -5350,7 +5347,7 @@ protected:
 			//  In the future, this should somehow determine the "main" battery, or use the "type" field of BATTERY_STATUS
 			//  to determine which battery is more important at a given time.
 
-			mavlink_msg_je_status_send_struct(_mavlink->get_channel(), &msg); //这里发送打好包的MAVLINK数据
+			mavlink_msg_efi_status_send_struct(_mavlink->get_channel(), &msg); //这里发送打好包的MAVLINK数据
 
 			return true;
 		}
@@ -5424,7 +5421,7 @@ static const StreamListItem streams_list[] = {
 	create_stream_list_item<MavlinkStreamFlightInformation>(),
 	create_stream_list_item<MavlinkStreamStorageInformation>(),
 	create_stream_list_item<MavlinkStreamRawRpm>(),
-	create_stream_list_item<MavlinkStreamJEStatus>()
+	create_stream_list_item<MavlinkStreamEFIStatus>()
 };
 
 const char *get_stream_name(const uint16_t msg_id)
